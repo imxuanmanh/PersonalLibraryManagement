@@ -1,5 +1,7 @@
 ﻿using PersonalLibraryManagement.Controls;
+using PersonalLibraryManagement.Interfaces;
 using PersonalLibraryManagement.Manager;
+using PersonalLibraryManagement.Models;
 using PersonalLibraryManagement.Repositories;
 using PersonalLibraryManagement.Services;
 using System;
@@ -16,55 +18,102 @@ namespace PersonalLibraryManagement
 {
     public partial class MainForm : Form
     {
-        private readonly IBookService _service;
-        public MainForm(IBookService service)
+        private readonly IAuthorService _authorService;
+        private readonly IBookService _bookService;
+        private readonly ICategoryService _categoryService;
+        private readonly IPublisherService _publisherService;
+        private readonly IStorageLocationService _storageLocationService;
+        private readonly ILoanHistoryService _loanHistoryService;
+
+        private UserControl _currentControl;
+        private Timer _debounceTimer;
+
+        private string PlaceholderText = "Nhập từ khóa ...";
+
+        public MainForm(IAuthorService authorService,
+                        IBookService bookService, 
+                        ICategoryService categoryService,
+                        IPublisherService publisherService,
+                        IStorageLocationService storageLocationService,
+                        ILoanHistoryService loanHistoryService)
         {
             InitializeComponent();
 
-            _service = service;
+            _authorService = authorService;
+            _bookService = bookService;
+            _categoryService = categoryService;
+            _publisherService = publisherService;
+            _storageLocationService = storageLocationService;
+            _loanHistoryService = loanHistoryService;
+        }
+        public MainForm( IBookService bookService)
+        {
+            InitializeComponent();
+
+            _bookService = bookService;
         }
 
         private void ShowUserControl(UserControl uc)
         {
-            panelRightView.Controls.Clear();
+            if (_currentControl != null)
+            {
+                panelRightView.Controls.Remove(_currentControl);
+                _currentControl.Dispose();
+                _currentControl = null;
+            }
 
-            panelRightView.Controls.Add(uc);
+
+
+            _currentControl = uc;
+            panelRightView.Controls.Add(_currentControl);
+
+            // Reset search box mỗi lần đổi control
+            txtSearchBox.Text = "";
+            SetSearchBoxPlaceHolder();
         }
 
         private void LoadCategoryGroupBox()
         {
-            //List<string> categories = _service.GetAllCategorys();
-            //int x = 5; // vị trí bắt đầu theo trục X
-            //int y = 5; // vị trí bắt đầu theo trục Y
-            //int count = 0; // đếm số nút trong 1 hàng
+            Dictionary<int, Category> categories = _categoryService.GetAllCategories();
 
-            //int buttonWidth = 110; // chiều rộng nút
-            //int buttonHeight = 30; // chiều cao nút
-            //int spacing = 7; // khoảng cách giữa các nút
+            // Chuyển sang Dictionary<int, string> với key là Id, value là Name
+            Dictionary<int, string> categoryNames = categories.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.Name
+            );
 
-            //foreach (string c in categories)
-            //{
-            //    Button btn = new Button();
-            //    btn.Text = c;
-            //    btn.Size = new Size(buttonWidth, buttonHeight);
-            //    btn.Location = new Point(x, y);
-            //    btn.Font = new Font("Time New Roman", 10);
-            //    btn.Click += OnCategoryButtonClick;
+            int x = 5; // vị trí bắt đầu theo trục X
+            int y = 5; // vị trí bắt đầu theo trục Y
+            int count = 0; // đếm số nút trong 1 hàng
 
-            //    pnCategoryList.Controls.Add(btn);
+            int buttonWidth = 110; // chiều rộng nút
+            int buttonHeight = 30; // chiều cao nút
+            int spacing = 7; // khoảng cách giữa các nút
 
-            //    count++;
+            foreach (var pair in categoryNames)
+            {
+                Button btn = new Button();
+                btn.Text = pair.Value; // hiển thị tên category
+                btn.Tag = pair.Key;    // lưu Id vào Tag để sử dụng khi click
+                btn.Size = new Size(buttonWidth, buttonHeight);
+                btn.Location = new Point(x, y);
+                btn.Font = new Font("Times New Roman", 10);
+                btn.Click += OnCategoryButtonClick;
 
-            //    if (count % 2 == 0) // đủ 2 nút thì xuống dòng
-            //    {
-            //        x = 5;
-            //        y += buttonHeight + spacing;
-            //    }
-            //    else
-            //    {
-            //        x += buttonWidth + spacing; // đặt nút tiếp theo bên phải
-            //    }
-            //}
+                pnCategoryList.Controls.Add(btn);
+
+                count++;
+
+                if (count % 2 == 0) // đủ 2 nút thì xuống dòng
+                {
+                    x = 5;
+                    y += buttonHeight + spacing;
+                }
+                else
+                {
+                    x += buttonWidth + spacing; // đặt nút tiếp theo bên phải
+                }
+            }
         }
 
 
@@ -75,7 +124,7 @@ namespace PersonalLibraryManagement
 
         private void OnBtnBookManagerClick(object sender, EventArgs e)
         {
-            UcBookList uc = new UcBookList(_service);
+            UcBookList uc = new UcBookList(_bookService);
             uc.LoadBooksToListView();
 
             ShowUserControl(uc);
@@ -83,13 +132,19 @@ namespace PersonalLibraryManagement
 
         private void OnBtnAddBookClick(object sender, EventArgs e)
         {
-            ShowUserControl(new UcAddBook(_service));
+            ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _loanHistoryService));
         }
 
         private void OnMainFormLoad(object sender, EventArgs e)
         {
             // MessageBox.Show(PathManager.ImageDir);
             LoadCategoryGroupBox();
+            this.ActiveControl = null;
+            SetSearchBoxPlaceHolder();
+            txtSearchBox.TextChanged += OnSearchBoxTextChanged;
+
+            // Mở mặc định danh sách sách
+            OnBtnBookManagerClick(null, EventArgs.Empty);
         }
 
         private void OnBtnStatsClick(object sender, EventArgs e)
@@ -107,5 +162,60 @@ namespace PersonalLibraryManagement
             MessageBox.Show("Bạn đã chọn thể loại: " + category);
         }
 
+        private void OnSearchBoxTextChanged(object sender, EventArgs e)
+        {
+            if (txtSearchBox.ForeColor == Color.Gray) return;
+
+            if (_debounceTimer == null)
+            {
+                _debounceTimer = new System.Windows.Forms.Timer();
+                _debounceTimer.Interval = 300; // 300ms
+                _debounceTimer.Tick += (s, args) =>
+                {
+                    _debounceTimer.Stop();
+
+                    // ❌ Bỏ qua khi text là placeholder
+                    if (txtSearchBox.Text == PlaceholderText) return;
+
+                    if (_currentControl is ISearchable searchable)
+                    {
+                        searchable.Filter(txtSearchBox.Text);
+                    }
+                };
+            }
+
+            _debounceTimer.Stop();
+            _debounceTimer.Start();
+        }
+
+        private void SetSearchBoxPlaceHolder()
+        {
+            txtSearchBox.TextChanged -= OnSearchBoxTextChanged;
+            txtSearchBox.Text = PlaceholderText;
+            txtSearchBox.ForeColor = Color.Gray;
+            txtSearchBox.TextChanged += OnSearchBoxTextChanged;
+        }
+
+        private void RemoveSearchBoxPlaceholder()
+        {
+            txtSearchBox.TextChanged -= OnSearchBoxTextChanged;
+            if (txtSearchBox.Text == PlaceholderText)
+                txtSearchBox.Text = "";
+            txtSearchBox.ForeColor = Color.Black;
+            txtSearchBox.TextChanged += OnSearchBoxTextChanged;
+        }
+
+        private void OnSearchBoxEnter(object sender, EventArgs e)
+        {
+            RemoveSearchBoxPlaceholder();
+        }
+
+        private void OnSearchBoxLeave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSearchBox.Text))
+            {
+                SetSearchBoxPlaceHolder();
+            }
+        }
     }
 }

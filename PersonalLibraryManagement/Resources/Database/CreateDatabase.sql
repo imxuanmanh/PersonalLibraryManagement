@@ -1,30 +1,27 @@
--- Bảng tác giả
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE Author (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL
 );
 
--- Bảng thể loại
 CREATE TABLE Category (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL
 );
 
--- Bảng nhà xuất bản
 CREATE TABLE Publisher (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL
 );
 
--- Bảng vị trí lưu trữ
 CREATE TABLE StorageLocation (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Room TEXT,
-    Shelf TEXT,
-    Row TEXT
+    Room TEXT NOT NULL,
+    Shelf TEXT NOT NULL,
+    Row TEXT NOT NULL
 );
 
--- Bảng sách
 CREATE TABLE Book (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Title TEXT NOT NULL,
@@ -33,7 +30,7 @@ CREATE TABLE Book (
     PublisherId INTEGER,
     PublishYear INTEGER,
     Description TEXT,
-    StorageLocationId INTEGER,
+    StorageLocationId INTEGER NOT NULL,
     ImagePath TEXT,
     FOREIGN KEY (AuthorId) REFERENCES Author(Id),
     FOREIGN KEY (CategoryId) REFERENCES Category(Id),
@@ -41,7 +38,6 @@ CREATE TABLE Book (
     FOREIGN KEY (StorageLocationId) REFERENCES StorageLocation(Id)
 );
 
---Bảng lịch sử mượn sách
 CREATE TABLE LoanHistory (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     BookId INTEGER NOT NULL,

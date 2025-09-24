@@ -16,22 +16,60 @@ namespace PersonalLibraryManagement
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            WorkingContext context = new WorkingContext();
-            await context.LoadAsync();
+            // Chạy async code đồng bộ trước khi start UI
+            InitializeAsync().GetAwaiter().GetResult();
+        }
 
-            IBookRepository bookRepository = new BookRepository(context);
+        private static async Task InitializeAsync()
+        {
+            IDbManager dbManager = new DbManager($"Data Source={PathManager.DatabasePath}");
+
+            IAuthorRepository authorRepository = new AuthorRepository(dbManager);
+            ICategoryRepository categoryRepository = new CategoryRepository(dbManager);
+            IPublisherRepository publisherRepository = new PublisherRepository(dbManager);
+            IStorageLocationRepository storageLocationRepository = new StorageLocationRepository(dbManager);
+            ILoanHistoryRepository loanHistoryRepository = new LoanHistoryRepository(dbManager);
+
+            await Task.WhenAll(
+                authorRepository.LoadAsync(),
+                categoryRepository.LoadAsync(),
+                publisherRepository.LoadAsync(),
+                storageLocationRepository.LoadAsync(),
+                loanHistoryRepository.LoadAsync()
+            );
+
+            IBookRepository bookRepository = new BookRepository(
+                dbManager, authorRepository,
+                categoryRepository,
+                publisherRepository,
+                storageLocationRepository,
+                loanHistoryRepository
+            );
+
             await bookRepository.LoadAsync();
 
+            IAuthorService authorService = new AuthorService(authorRepository);
             IBookService bookService = new BookService(bookRepository);
+            ICategoryService categoryService = new CategoryService(categoryRepository);
+            IPublisherService publisherService = new PublisherService(publisherRepository);
+            IStorageLocationService storageLocationService = new StorageLocationService(storageLocationRepository);
+            ILoanHistoryService loanHistoryService = new LoanHistoryService(loanHistoryRepository);
 
-            Application.Run(new MainForm(bookService));
+            MainForm mainForm = new MainForm(
+                authorService,
+                bookService,
+                categoryService,
+                publisherService,
+                storageLocationService,
+                loanHistoryService
+            );
 
-
+            Application.Run(mainForm);
         }
     }
 }

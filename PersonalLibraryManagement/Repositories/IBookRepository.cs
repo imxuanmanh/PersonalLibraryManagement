@@ -11,7 +11,7 @@ namespace PersonalLibraryManagement.Repositories
     public interface IBookRepository
     {
         Book GetBookById(int id);
-        Task<bool> AddAsync(Book book);
+        Task<int> AddAsync(Book book);
         Task<bool> UpdateAsync(Book book);
         Task<bool> DeleteAsync(int bookId);
         Task LoadAsync();

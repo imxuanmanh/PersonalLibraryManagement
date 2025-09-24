@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using System.Data.SqlClient;
 
 namespace PersonalLibraryManagement.Repositories
 {
@@ -24,6 +26,32 @@ namespace PersonalLibraryManagement.Repositories
             _loanHistories = await _dbManager.ExecuteQueryAsync<LoanHistory>(
                 @"SELECT Id, BookId, BorrowerName, LenderName, LoanDate, MustReturnDate, ActualReturnDate FROM LoanHistory"
                 );
+        }
+
+        public async Task<int> AddAsync(LoanHistory history)
+        {
+            int insertedLoanHistoryId = await _dbManager.ExecuteScalarAsync<int>(
+                @"
+                INSERT INTO 
+                    LoanHistory(BookId, LenderName, MustReturnDate)
+
+                VALUES (@bookId, @lenderName, @mustReturnDate);
+
+                SELECT last_insert_rowid();
+                ",
+                new SqliteParameter("@bookId", history.BookId),
+                new SqliteParameter("@lenderName", history.LenderName),
+                new SqliteParameter("@mustReturnDate", history.MustReturnDate)
+            );
+
+            if (insertedLoanHistoryId > 0)
+            {
+                history.Id = insertedLoanHistoryId;
+                _loanHistories[insertedLoanHistoryId] = history;
+                return insertedLoanHistoryId;
+            }
+
+            return -1;
         }
 
         public Dictionary<int, LoanHistory> GetAllLoanHistories()

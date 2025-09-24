@@ -25,9 +25,32 @@ namespace PersonalLibraryManagement.Repositories
                 @"SELECT Id, Name FROM Author"
                 );
         }
+
+        public async Task AddAsync(Author author)
+        {
+            int insertedAuthorId = await _dbManager.ExecuteScalarAsync<int>(
+                @"
+                INSERT INTO Author(Name) VALUES (@name);
+                SELECT last_insert_rowid();
+                ",
+                new SqliteParameter("@name", author.Name)
+            );
+
+            if (insertedAuthorId > 0)
+            {
+                author.Id = insertedAuthorId;
+
+                if (_authors == null)
+                    _authors = new Dictionary<int, Author>();
+
+
+                _authors[insertedAuthorId] = author;
+            }
+        }
+
         public Dictionary<int, Author> GetAllAuthors()
         {
-             return _authors;
+            return _authors;
         }
 
     }

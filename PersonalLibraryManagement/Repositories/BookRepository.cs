@@ -14,14 +14,31 @@ namespace PersonalLibraryManagement.Repositories
 {
     public class BookRepository : IBookRepository
     {
-        private readonly WorkingContext _context;
+        private readonly IDbManager _dbManager;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IPublisherRepository _publisherRepository;
+        private readonly IStorageLocationRepository _storageLocationRepository;
+        private readonly ILoanHistoryRepository _loanHistoryRepository;
 
         private Dictionary<int, Book> _books;
         public IReadOnlyDictionary<int, Book> Books => _books;
 
-        public BookRepository(WorkingContext context)
+        public BookRepository(
+            IDbManager dbManager,
+            IAuthorRepository authorRepository,
+            ICategoryRepository categoryRepository,
+            IPublisherRepository publisherRepository,
+            IStorageLocationRepository storageLocationRepository,
+            ILoanHistoryRepository loanHistoryRepository
+            )
         {
-            _context = context;
+            _dbManager = dbManager;
+            _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
+            _publisherRepository = publisherRepository;
+            _storageLocationRepository = storageLocationRepository;
+            _loanHistoryRepository = loanHistoryRepository;
 
             _books = new Dictionary<int, Book>();
         }
@@ -31,7 +48,7 @@ namespace PersonalLibraryManagement.Repositories
             return _books.ContainsKey(id) ? _books[id] : null;
         }
 
-        public async Task<bool> AddAsync(Book book)
+        public async Task<int> AddAsync(Book book)
         {
             string query = @"
                 INSERT INTO Book (Title, AuthorId, CategoryId, PublisherId, PublishYear, Description, StorageLocationId, ImagePath)
@@ -43,24 +60,24 @@ namespace PersonalLibraryManagement.Repositories
             var parameters = new[]
             {
                 new SqliteParameter("@Title", book.Title),
-                new SqliteParameter("@AuthorId", book.AuthorId),
-                new SqliteParameter("@CategoryId", book.CategoryId),
-                new SqliteParameter("@PublisherId", book.PublisherId),
-                new SqliteParameter("@PublishYear", book.PublishYear),
+                new SqliteParameter("@AuthorId", book.AuthorId ?? (object)DBNull.Value),
+                new SqliteParameter("@CategoryId", book.CategoryId ?? (object)DBNull.Value),
+                new SqliteParameter("@PublisherId", book.PublisherId ?? (object)DBNull.Value),
+                new SqliteParameter("@PublishYear", book.PublishYear?? (object)DBNull.Value),
                 new SqliteParameter("@Description", book.Description ?? (object)DBNull.Value),
                 new SqliteParameter("@StorageLocationId", book.StorageLocationId),
                 new SqliteParameter("@ImagePath", book.ImagePath ?? (object)DBNull.Value)
             };
 
-            int newId = await _context.DbManager.ExecuteScalarAsync<int>(query, parameters);
+            int newId = await _dbManager.ExecuteScalarAsync<int>(query, parameters);
 
             if (newId > 0)
             {   
                 book.Id = newId;
                 _books[newId] = book;
-                return true;
+                return newId;
             }
-            return false;
+            return -1;
         }
 
         public async Task<bool> UpdateAsync(Book book)
@@ -92,7 +109,7 @@ namespace PersonalLibraryManagement.Repositories
                 new SqliteParameter("@ImagePath", book.ImagePath ?? (object)DBNull.Value)
             };
 
-            int affectedRows = await _context.DbManager.ExecuteNonQueryAsync(query, parameters);
+            int affectedRows = await _dbManager.ExecuteNonQueryAsync(query, parameters);
 
             if (affectedRows > 0)
             {
@@ -105,7 +122,7 @@ namespace PersonalLibraryManagement.Repositories
         public async Task<bool> DeleteAsync(int bookId)
         {
 
-            int affectedRows = await _context.DbManager.ExecuteNonQueryAsync(@"DELETE FROM Book WHERE Id = @Id", new SqliteParameter("@Id", bookId));
+            int affectedRows = await _dbManager.ExecuteNonQueryAsync(@"DELETE FROM Book WHERE Id = @Id", new SqliteParameter("@Id", bookId));
            
             if (affectedRows > 0)
             {
@@ -118,7 +135,7 @@ namespace PersonalLibraryManagement.Repositories
 
         public async Task LoadAsync()
         {
-            _books = await _context.DbManager.ExecuteQueryAsync<Book>("SELECT * FROM Book");
+            _books = await _dbManager.ExecuteQueryAsync<Book>("SELECT * FROM Book");
             System.Diagnostics.Debug.WriteLine($"Tong {_books.Count} cuon sach");
         }
 
@@ -129,22 +146,38 @@ namespace PersonalLibraryManagement.Repositories
 
         public Dictionary<int, BookViewModel> GetAllBookViewModels()
         {
+            var authors = _authorRepository.GetAllAuthors();
+            var categories = _categoryRepository.GetAllCategories();
+            var publishers = _publisherRepository.GetAllPublishers();
+            var storageLocations = _storageLocationRepository.GetAllStorageLocations();
+
             return _books.ToDictionary(
                 pair => pair.Key,
-                pair => new BookViewModel
-                (
-                    pair.Value.Id,
-                    pair.Value.Title,
-                    _context.Authors.GetAllAuthors().TryGetValue(pair.Value.AuthorId, out var author) ? author.Name : "Unknown",
-                    _context.Categories.GetAllCategories().TryGetValue(pair.Value.CategoryId, out var category) ? category.Name : "Unknown",
-                    _context.Publishers.GetAllPublishers().TryGetValue(pair.Value.PublisherId, out var publisher) ? publisher.Name : "Unknown",
-                    pair.Value.PublishYear,
-                    pair.Value.ImagePath,
-                    pair.Value.Description,
-                    _context.LoanHistories.GetStatusByBookId(pair.Value.Id),
-                    _context.StorageLocations.GetAllStorageLocations().TryGetValue(pair.Value.StorageLocationId, out var storageLocation) ? storageLocation.ToString() : "Unknown"
-                )
-             );
+                pair =>
+                {
+                    var book = pair.Value;
+
+                    string authorName = authors.TryGetValue(book.AuthorId ?? -1, out var author) ? author.Name : "Không rõ";
+                    string categoryName = categories.TryGetValue(book.CategoryId ?? -1, out var category) ? category.Name : "Không rõ";
+                    string publisherName = publishers.TryGetValue(book.PublisherId ?? -1, out var publisher) ? publisher.Name : "Không rõ";
+                    string storageLocationName = storageLocations.TryGetValue(book.StorageLocationId, out var loc) ? loc?.ToString() : "Không rõ";
+                    string status = _loanHistoryRepository.GetStatusByBookId(book.Id);
+
+                    return new BookViewModel(
+                        book.Id,
+                        book.Title,
+                        authorName,
+                        categoryName,
+                        publisherName,
+                        book.PublishYear, // giữ nullable
+                        book.ImagePath,
+                        book.Description,
+                        status,
+                        storageLocationName
+                    );
+                }
+            );
         }
+
     }
 }

@@ -20,6 +20,10 @@ namespace PersonalLibraryManagement.Services
             _repository = bookRepository;
         }
 
+        public async Task<int> AddBookAsync(Book book)
+        {
+            return await _repository.AddAsync(book); 
+        }
         public IEnumerable<Book> GetAllBooks()
         {
             return _repository.GetAll();

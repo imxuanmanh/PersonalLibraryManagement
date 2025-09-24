@@ -117,21 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="btnSearch.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAABGdBTUEAALGPC/xhBQAAASFJREFUSEvt
-        lbEOAUEQhmctD0CiUnkGL+Ah9AqvoNMoPYDKs0hUPAqhkNAqzv/P7uUuwu1ydwrxJWNu1pm53Zn/yJ8q
-        GYmRixFJcJ3g+gA/0G8qoA9LjBhNrkWML8TYyA2+FF1hcp/UikzgW7A2bME1mt/dx6QFNi58ihbCw5xd
-        +A7WjvDpEwRx9w2l6cJ4rroLa3lEIXa+ZzMXxuPPesAehJjCWGSr0RtgcvTp2OQQcxgnbe3CeKgDFuEU
-        FYId7/2Ejd1KPBQaf0groqdjHr7vJRRakQ46sLTAkgufkincyA6eTWYPjrqW7YJWCgotnyxnjZXz5Y4s
-        hUKjDjimmKJH/VS3oxBfLAR9lX1pxqCF1NdK9p9z0rgu8NKst8CvI3IHonBgJeYqwo0AAAAASUVORK5C
-        YII=
-</value>
-  </data>
   <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>138, 78</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="toolStripDropDownButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

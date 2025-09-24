@@ -10,6 +10,7 @@ namespace PersonalLibraryManagement.Services
 {
     public interface IBookService
     {
+        Task<int> AddBookAsync(Book book);
         IEnumerable<Book> GetAllBooks();
         Dictionary<int, BookViewModel> GetAllBookViewModels();
         Book GetBookById(int id);

@@ -17,9 +17,11 @@ namespace PersonalLibraryManagement.Models
         public DateTime? ActualReturnDate {  get; set; }
 
         public LoanHistory() { }
-        public LoanHistory(int id, int bookId, string borrowerName, string lenderName, DateTime? loanDate, DateTime? mustReturnDate, DateTime? actualReturnDate)
+
+
+
+        public LoanHistory(int bookId, string borrowerName, string lenderName, DateTime? loanDate, DateTime? mustReturnDate, DateTime? actualReturnDate)
         {
-            Id = id;
             BookId = bookId;
             BorrowerName = borrowerName;
             LenderName = lenderName;
