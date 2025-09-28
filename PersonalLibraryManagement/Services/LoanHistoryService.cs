@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace PersonalLibraryManagement.Services
 {
-    public class LoanHistoryService : ILoanHistoryService
+    public class CirculationService : ICirculationService
     {
-        private readonly ILoanHistoryRepository _loanHistoryRepository;
+        private readonly ICirculationRepository _CirculationRepository;
 
-        public LoanHistoryService(ILoanHistoryRepository loanHistoryRepository)
+        public CirculationService(ICirculationRepository CirculationRepository)
         {
-            _loanHistoryRepository = loanHistoryRepository;
+            _CirculationRepository = CirculationRepository;
         }
 
-        public async Task<int> AddLoanHistoryAsync(LoanHistory loanHistory)
+        public async Task<int> AddCirculationAsync(Circulation Circulation)
         {
-            return await _loanHistoryRepository.AddAsync(loanHistory);  
+            return await _CirculationRepository.AddAsync(Circulation);  
         }
     }
 }

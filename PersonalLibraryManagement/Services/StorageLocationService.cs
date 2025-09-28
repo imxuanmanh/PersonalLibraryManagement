@@ -17,9 +17,33 @@ namespace PersonalLibraryManagement.Services
             _storageLocationRepository = storageLocationRepository;
         }
 
-        public Dictionary<int, StorageLocation> GetAllStorageLocations()
+        public Dictionary<int, Room> GetAllRooms()
         {
-            return _storageLocationRepository.GetAllStorageLocations();
+            return _storageLocationRepository.GetAllRooms();
+        }
+
+        public Dictionary<int, Shelf> GetAllShelfByRoomId(int roomId)
+        {
+            return _storageLocationRepository.GetAllShelfByRoomId(roomId);
+        }
+
+        public Dictionary<int, ShelfRow> GetAllShelfRowByShelfId(int shelfId)
+        {
+            return _storageLocationRepository.GetAllShelfRowByShelfId(shelfId);
+        }
+
+        public async Task<int> AddRoomAsync(Room room)
+        {
+            return await _storageLocationRepository.AddRoomAsync(room);
+        }
+        public async Task<int> AddShelfAsync(Shelf shelf)
+        {
+            return await _storageLocationRepository.AddShelfAsync(shelf);
+        }
+
+        public async Task<int> AddShelfRowAsync(ShelfRow shelfRow)
+        {
+            return await _storageLocationRepository.AddShelfRowAsync(shelfRow);
         }
     }
 }

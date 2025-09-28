@@ -9,6 +9,11 @@ namespace PersonalLibraryManagement.Services
 {
     public interface IStorageLocationService
     {
-        Dictionary<int, StorageLocation> GetAllStorageLocations();
+        Dictionary<int, Room> GetAllRooms();
+        Dictionary<int, Shelf> GetAllShelfByRoomId(int roomId);
+        Dictionary<int, ShelfRow> GetAllShelfRowByShelfId(int shelfId);
+        Task<int> AddRoomAsync(Room room);
+        Task<int> AddShelfAsync(Shelf shelf);
+        Task<int> AddShelfRowAsync(ShelfRow shelfRow);
     }
 }

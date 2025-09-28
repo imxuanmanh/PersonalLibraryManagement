@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PersonalLibraryManagement.Repositories
 {
-    public interface ILoanHistoryRepository
+    public interface ICirculationRepository
     {
         Task LoadAsync();
-        Task<int> AddAsync(LoanHistory history);
-        Dictionary<int, LoanHistory> GetAllLoanHistories();
+        Task<int> AddAsync(Circulation circulation);
+        Dictionary<int, Circulation> GetAllCirculations();
         string GetStatusByBookId(int bookId);
     }
 }

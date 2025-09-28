@@ -19,7 +19,7 @@ namespace PersonalLibraryManagement.Repositories
         private readonly ICategoryRepository _categoryRepository;
         private readonly IPublisherRepository _publisherRepository;
         private readonly IStorageLocationRepository _storageLocationRepository;
-        private readonly ILoanHistoryRepository _loanHistoryRepository;
+        private readonly ICirculationRepository _CirculationRepository;
 
         private Dictionary<int, Book> _books;
         public IReadOnlyDictionary<int, Book> Books => _books;
@@ -30,7 +30,7 @@ namespace PersonalLibraryManagement.Repositories
             ICategoryRepository categoryRepository,
             IPublisherRepository publisherRepository,
             IStorageLocationRepository storageLocationRepository,
-            ILoanHistoryRepository loanHistoryRepository
+            ICirculationRepository CirculationRepository
             )
         {
             _dbManager = dbManager;
@@ -38,7 +38,7 @@ namespace PersonalLibraryManagement.Repositories
             _categoryRepository = categoryRepository;
             _publisherRepository = publisherRepository;
             _storageLocationRepository = storageLocationRepository;
-            _loanHistoryRepository = loanHistoryRepository;
+            _CirculationRepository = CirculationRepository;
 
             _books = new Dictionary<int, Book>();
         }
@@ -161,7 +161,7 @@ namespace PersonalLibraryManagement.Repositories
                     string categoryName = categories.TryGetValue(book.CategoryId ?? -1, out var category) ? category.Name : "Không rõ";
                     string publisherName = publishers.TryGetValue(book.PublisherId ?? -1, out var publisher) ? publisher.Name : "Không rõ";
                     string storageLocationName = storageLocations.TryGetValue(book.StorageLocationId, out var loc) ? loc?.ToString() : "Không rõ";
-                    string status = _loanHistoryRepository.GetStatusByBookId(book.Id);
+                    string status = _CirculationRepository.GetStatusByBookId(book.Id);
 
                     return new BookViewModel(
                         book.Id,

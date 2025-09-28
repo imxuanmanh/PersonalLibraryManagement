@@ -33,14 +33,14 @@ namespace PersonalLibraryManagement
             ICategoryRepository categoryRepository = new CategoryRepository(dbManager);
             IPublisherRepository publisherRepository = new PublisherRepository(dbManager);
             IStorageLocationRepository storageLocationRepository = new StorageLocationRepository(dbManager);
-            ILoanHistoryRepository loanHistoryRepository = new LoanHistoryRepository(dbManager);
+            ICirculationRepository CirculationRepository = new CirculationRepository(dbManager);
 
             await Task.WhenAll(
                 authorRepository.LoadAsync(),
                 categoryRepository.LoadAsync(),
                 publisherRepository.LoadAsync(),
                 storageLocationRepository.LoadAsync(),
-                loanHistoryRepository.LoadAsync()
+                CirculationRepository.LoadAsync()
             );
 
             IBookRepository bookRepository = new BookRepository(
@@ -48,7 +48,7 @@ namespace PersonalLibraryManagement
                 categoryRepository,
                 publisherRepository,
                 storageLocationRepository,
-                loanHistoryRepository
+                CirculationRepository
             );
 
             await bookRepository.LoadAsync();
@@ -58,7 +58,7 @@ namespace PersonalLibraryManagement
             ICategoryService categoryService = new CategoryService(categoryRepository);
             IPublisherService publisherService = new PublisherService(publisherRepository);
             IStorageLocationService storageLocationService = new StorageLocationService(storageLocationRepository);
-            ILoanHistoryService loanHistoryService = new LoanHistoryService(loanHistoryRepository);
+            ICirculationService CirculationService = new CirculationService(CirculationRepository);
 
             MainForm mainForm = new MainForm(
                 authorService,
@@ -66,7 +66,7 @@ namespace PersonalLibraryManagement
                 categoryService,
                 publisherService,
                 storageLocationService,
-                loanHistoryService
+                CirculationService
             );
 
             Application.Run(mainForm);

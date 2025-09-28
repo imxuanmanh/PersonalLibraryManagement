@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PersonalLibraryManagement.Models
 {
-    public class StorageLocation
+    public class StorageLocationViewModel
     {
         public int Id {  get; set; }
         public string Room {  get; set; }

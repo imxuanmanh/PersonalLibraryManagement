@@ -36,7 +36,7 @@ namespace PersonalLibraryManagement.Repositories
             });
 
             Insert(new Book("Bạn trẻ đời thường", "Tác giả A", "Novel"));
-            Insert(new Book("Lịch sử Việt Nam", "Tác giả B", "History"));
+            Insert(new Book("Lịch sử Việt Nam", "Tác giả B", "circulation"));
             Insert(new Book("Cơ sở dữ liệu", "Tác giả C", "Database"));
             Insert(new Book("Lập trình C# nâng cao", "Tác giả D", "Programming"));
             Insert(new Book("Toán học rèn luyện tư duy", "Tác giả E", "Mathematics"));

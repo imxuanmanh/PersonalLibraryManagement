@@ -23,7 +23,7 @@ namespace PersonalLibraryManagement
         private readonly ICategoryService _categoryService;
         private readonly IPublisherService _publisherService;
         private readonly IStorageLocationService _storageLocationService;
-        private readonly ILoanHistoryService _loanHistoryService;
+        private readonly ICirculationService _CirculationService;
 
         private UserControl _currentControl;
         private Timer _debounceTimer;
@@ -35,7 +35,7 @@ namespace PersonalLibraryManagement
                         ICategoryService categoryService,
                         IPublisherService publisherService,
                         IStorageLocationService storageLocationService,
-                        ILoanHistoryService loanHistoryService)
+                        ICirculationService CirculationService)
         {
             InitializeComponent();
 
@@ -44,7 +44,7 @@ namespace PersonalLibraryManagement
             _categoryService = categoryService;
             _publisherService = publisherService;
             _storageLocationService = storageLocationService;
-            _loanHistoryService = loanHistoryService;
+            _CirculationService = CirculationService;
         }
         public MainForm( IBookService bookService)
         {
@@ -132,7 +132,7 @@ namespace PersonalLibraryManagement
 
         private void OnBtnAddBookClick(object sender, EventArgs e)
         {
-            ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _loanHistoryService));
+            ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _CirculationService));
         }
 
         private void OnMainFormLoad(object sender, EventArgs e)

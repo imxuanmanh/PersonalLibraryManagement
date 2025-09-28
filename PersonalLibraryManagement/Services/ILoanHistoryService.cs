@@ -7,8 +7,8 @@ using PersonalLibraryManagement.Models;
 
 namespace PersonalLibraryManagement.Services
 {
-    public interface ILoanHistoryService
+    public interface ICirculationService
     {
-        Task<int> AddLoanHistoryAsync(LoanHistory loanHistory);
+        Task<int> AddCirculationAsync(Circulation Circulation);
     }
 }

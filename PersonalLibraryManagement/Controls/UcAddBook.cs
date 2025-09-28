@@ -23,11 +23,11 @@ namespace PersonalLibraryManagement.Controls
         private readonly IAuthorService _authorService;
         private readonly IPublisherService _pulisherService;
         private readonly IStorageLocationService _storageLocationService;
-        private readonly ILoanHistoryService _loanHistoryService;
+        private readonly ICirculationService _CirculationService;
 
         public string SelectedImageName { get; private set; } = null;
         public string SelectedImagePath { get; private set; } = null;
-        private List<StorageLocation> _storageLocations;
+        private List<StorageLocationViewModel> _storageLocations;
 
 
         public UcAddBook(
@@ -36,7 +36,7 @@ namespace PersonalLibraryManagement.Controls
             IAuthorService authorService,
             IPublisherService publisherService,
             IStorageLocationService storageLocationService,
-            ILoanHistoryService loanHistoryService
+            ICirculationService CirculationService
             )
         {
             InitializeComponent();
@@ -45,7 +45,7 @@ namespace PersonalLibraryManagement.Controls
             _authorService = authorService;
             _pulisherService = publisherService;
             _storageLocationService = storageLocationService;
-            _loanHistoryService = loanHistoryService;
+            _CirculationService = CirculationService;
         }
 
         private void SetupCategoryComboBox()
@@ -81,27 +81,41 @@ namespace PersonalLibraryManagement.Controls
 
             cboPublisher.Tag = "Publisher";
         }
-        private void SetupStorageLocationComboBox()
+        private void SetupRoomComboBox()
         {
-            var storageLocations = _storageLocationService.GetAllStorageLocations();
-            var rooms = storageLocations.Values.Select(r => r.Room).Distinct().ToList();
-            var shelves = storageLocations.Values.Select(s => s.Shelf).Distinct().ToList();
-            var rows = storageLocations.Values.Select(s => s.Row).Distinct().ToList();
+            var rooms = _storageLocationService.GetAllRooms().Values.ToList();
 
-            rooms.Insert(0, "-- Phòng --");
-            rooms.Add("➕Thêm phòng");
-            shelves.Insert(0, "-- Kệ --");
-            shelves.Add("➕Thêm kệ");
-            rows.Insert(0, "-- Hàng --");
-            rows.Add("➕Thêm hàng");
+            rooms.Insert(0, new Room { Name = "-- Phòng --" });
+            rooms.Add(new Room { Name = "➕Thêm phòng" });
+            //shelves.Insert(0, "-- Kệ --");
+            //shelves.Add("➕Thêm kệ");
+            //rows.Insert(0, "-- Hàng --");
+            //rows.Add("➕Thêm hàng");
 
             cboRoom.DataSource = rooms;
-            cboShelf.DataSource = shelves;
-            cboRow.DataSource = rows;
+            cboRoom.DisplayMember = "Name";
+            cboRoom.ValueMember = "Id";
+            //cboShelf.DataSource = shelves;
+            //cboRow.DataSource = rows;
+
+            cboRoom.SelectedIndexChanged += (s, e) =>
+            {
+                var selectedRoom = cboRoom.SelectedItem as Room;
+
+                if (selectedRoom == null)
+                    return;
+
+                SetupShelfComboBox(selectedRoom.Id);
+            };
 
             cboRoom.Tag = "Room";
-            cboShelf.Tag = "Shelf";
-            cboRow.Tag = "Row";
+            //cboShelf.Tag = "Shelf";
+            //cboRow.Tag = "Row";
+        }
+
+        private void SetupShelfComboBox(int roomId)
+        {
+
         }
 
         private void OnAddBookUCLoad(object sender, EventArgs e)
@@ -109,7 +123,7 @@ namespace PersonalLibraryManagement.Controls
             SetupAuthorComboBox();
             SetupCategoryComboBox();
             SetupPublisherComboBox();
-            SetupStorageLocationComboBox();
+            // SetupStorageLocationComboBox();
 
             OnIsBorrowedCheckBoxCheckedChanged(null, EventArgs.Empty);
         }
@@ -281,7 +295,7 @@ namespace PersonalLibraryManagement.Controls
 
             // if (newBookId != -1 && chkIsBorrowed.Checked == true)
             // {
-            //     LoanHistory newLoanHistory = new LoanHistory
+            //     Circulation newCirculation = new Circulation
             //     {
             //         BookId = newBookId,
             //         LenderName = txtLender.Text,
@@ -290,7 +304,7 @@ namespace PersonalLibraryManagement.Controls
 
             //     // Biến vô danh (_) dùng để nhận kết quả, hiện chưa dùng tới
             //     // Dự kiến sẽ dùng để kiểm tra và hủy transaction nếu không thành công (mở rộng sau)
-            //     _ = await _loanHistoryService.AddLoanHistoryAsync(newLoanHistory);
+            //     _ = await _CirculationService.AddCirculationAsync(newCirculation);
             // }
             // try
             // {
