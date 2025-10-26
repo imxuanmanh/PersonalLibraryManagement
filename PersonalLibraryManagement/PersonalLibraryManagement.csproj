@@ -122,6 +122,7 @@
     <Compile Include="Controls\UcStats.Designer.cs">
       <DependentUpon>UcStats.cs</DependentUpon>
     </Compile>
+    <Compile Include="Enums\CirculationStatus.cs" />
     <Compile Include="Extensions\SqliteDataReaderExtensions.cs" />
     <Compile Include="FormAddItem.cs">
       <SubType>Form</SubType>
@@ -130,6 +131,12 @@
       <DependentUpon>FormAddItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ISearchable.cs" />
+    <Compile Include="LendForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LendForm.Designer.cs">
+      <DependentUpon>LendForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Manager\DbManager.cs" />
     <Compile Include="Manager\IDbManager.cs" />
     <Compile Include="Manager\PathManager.cs" />
@@ -143,6 +150,7 @@
     </Compile>
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Circulation.cs" />
+    <Compile Include="Models\ComboBoxItem.cs" />
     <Compile Include="Models\Publisher.cs" />
     <Compile Include="Models\Room.cs" />
     <Compile Include="Models\Shelf.cs" />
@@ -155,33 +163,32 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Repositories\AuthorRepository.cs" />
-    <Compile Include="Repositories\BookRepository.cs" />
-    <Compile Include="Repositories\CategoryRepository.cs" />
-    <Compile Include="Repositories\IAuthorRepository.cs" />
-    <Compile Include="Repositories\IBookRepository.cs" />
-    <Compile Include="Repositories\IBookStorage.cs" />
-    <Compile Include="Repositories\ICategoryRepository.cs" />
-    <Compile Include="Repositories\InMemoryBookStorage.cs" />
-    <Compile Include="Repositories\IPublisherRepository.cs" />
-    <Compile Include="Repositories\IStorageLocationRepository.cs" />
-    <Compile Include="Repositories\CirculationRepository.cs" />
-    <Compile Include="Repositories\PublisherRepository.cs" />
-    <Compile Include="Repositories\StorageLocationRepository.cs" />
-    <Compile Include="Services\AuthorService.cs" />
-    <Compile Include="Services\BookService.cs" />
-    <Compile Include="Services\CategoryService.cs" />
-    <Compile Include="Services\IAuthorService.cs" />
-    <Compile Include="Services\IBookService.cs" />
-    <Compile Include="Services\ICategoryService.cs" />
-    <Compile Include="Services\ILoanHistoryService.cs" />
-    <Compile Include="Services\IPublisherService.cs" />
-    <Compile Include="Services\IStorageLocationService.cs" />
-    <Compile Include="Services\LoanHistoryService.cs" />
-    <Compile Include="Services\PublisherService.cs" />
-    <Compile Include="Services\StorageLocationService.cs" />
+    <Compile Include="Repositories\Implements\AuthorRepository.cs" />
+    <Compile Include="Repositories\Implements\BookRepository.cs" />
+    <Compile Include="Repositories\Implements\CategoryRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IAuthorRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IBookRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IBookStorage.cs" />
+    <Compile Include="Repositories\Interfaces\ICategoryRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IPublisherRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IStorageLocationRepository.cs" />
+    <Compile Include="Repositories\Implements\CirculationRepository.cs" />
+    <Compile Include="Repositories\Implements\PublisherRepository.cs" />
+    <Compile Include="Repositories\Implements\StorageLocationRepository.cs" />
+    <Compile Include="Services\Implements\AuthorService.cs" />
+    <Compile Include="Services\Implements\BookService.cs" />
+    <Compile Include="Services\Implements\CategoryService.cs" />
+    <Compile Include="Services\Interfaces\IAuthorService.cs" />
+    <Compile Include="Services\Interfaces\IBookService.cs" />
+    <Compile Include="Services\Interfaces\ICategoryService.cs" />
+    <Compile Include="Services\Interfaces\ICirculationService.cs" />
+    <Compile Include="Services\Interfaces\IPublisherService.cs" />
+    <Compile Include="Services\Interfaces\IStorageLocationService.cs" />
+    <Compile Include="Services\Implements\CirculationService.cs" />
+    <Compile Include="Services\Implements\PublisherService.cs" />
+    <Compile Include="Services\Implements\StorageLocationService.cs" />
     <Compile Include="ViewModels\BookViewModel.cs" />
-    <Compile Include="Repositories\ICirculationRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ICirculationRepository.cs" />
     <EmbeddedResource Include="Controls\UcAddBook.resx">
       <DependentUpon>UcAddBook.cs</DependentUpon>
     </EmbeddedResource>
@@ -196,6 +203,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormAddItem.resx">
       <DependentUpon>FormAddItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LendForm.resx">
+      <DependentUpon>LendForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -237,12 +247,7 @@
   <ItemGroup>
     <None Include="icon\add.png" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bookshelf %281%29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\Images\bookshelf.png" />
   </ItemGroup>

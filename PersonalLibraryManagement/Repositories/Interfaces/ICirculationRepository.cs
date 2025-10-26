@@ -1,5 +1,5 @@
 ﻿using PersonalLibraryManagement.Models;
-using System;
+using PersonalLibraryManagement.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,11 @@ namespace PersonalLibraryManagement.Repositories
     {
         Task LoadAsync();
         Task<int> AddAsync(Circulation circulation);
+        Task<bool> RecallAsync(int bookId);
+        Task<bool> ReturnAsync(int bookId);
+        CirculationStatus GetStatusByBookId(int bookId);
+
         Dictionary<int, Circulation> GetAllCirculations();
-        string GetStatusByBookId(int bookId);
+        Circulation GetActiveCirculationByBookId(int bookId);
     }
 }

@@ -13,7 +13,7 @@ namespace PersonalLibraryManagement.Models
         public string BookTitleSnapshot {  get; set; }
         public string BorrowerName {  get; set; }
         public string LenderName { get; set; }
-        public DateTime CirculationDate { get; set; }
+        public DateTime CirculationDate { get; set; } = DateTime.Now;
         public DateTime? ReturnDate {  get; set; }
 
         public Circulation() { }

@@ -47,7 +47,7 @@
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.lưuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
@@ -58,13 +58,12 @@
             this.groupBox2.SuspendLayout();
             this.gbCategoryList.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Silver;
-            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.txtSearchBox);
             this.panel1.Location = new System.Drawing.Point(16, 85);
             this.panel1.Name = "panel1";
@@ -76,7 +75,7 @@
             this.txtSearchBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSearchBox.Location = new System.Drawing.Point(11, 5);
             this.txtSearchBox.Name = "txtSearchBox";
-            this.txtSearchBox.Size = new System.Drawing.Size(243, 29);
+            this.txtSearchBox.Size = new System.Drawing.Size(279, 29);
             this.txtSearchBox.TabIndex = 1;
             this.txtSearchBox.TabStop = false;
             this.txtSearchBox.Enter += new System.EventHandler(this.OnSearchBoxEnter);
@@ -274,14 +273,16 @@
             this.panel2.Size = new System.Drawing.Size(1342, 39);
             this.panel2.TabIndex = 5;
             // 
-            // pictureBox1
+            // checkBox1
             // 
-            this.pictureBox1.Image = global::PersonalLibraryManagement.Properties.Resources.search;
-            this.pictureBox1.Location = new System.Drawing.Point(254, 6);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 29);
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(293, 7);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(89, 25);
+            this.checkBox1.TabIndex = 2;
+            this.checkBox1.Text = "Ghi nhớ";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -317,7 +318,6 @@
             this.gbCategoryList.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,7 +342,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel pnCategoryList;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

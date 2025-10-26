@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PersonalLibraryManagement.Enums;
 using PersonalLibraryManagement.Models;
 
 namespace PersonalLibraryManagement.ViewModels
@@ -17,10 +18,22 @@ namespace PersonalLibraryManagement.ViewModels
         public int? PublishYear {  get; set; }
         public string Description { get; set; }
         public string ImagePath { get; set; }
-        public string Status {  get; set; }
+        public CirculationStatus Status {  get; set; }
         public string StorageLocation {  get; set; }
         
-        public BookViewModel(int id, string title, string author, string category, string publisher, int? publishYear, string imagePath, string description, string status, string storageLocation)
+        public BookViewModel
+            (
+            int id, 
+            string title, 
+            string author, 
+            string category, 
+            string publisher, 
+            int? publishYear, 
+            string imagePath, 
+            string description, 
+            CirculationStatus status, 
+            string storageLocation
+            )
         {
             Id = id;
             Title = title;

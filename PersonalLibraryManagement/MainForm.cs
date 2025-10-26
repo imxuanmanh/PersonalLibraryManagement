@@ -23,7 +23,7 @@ namespace PersonalLibraryManagement
         private readonly ICategoryService _categoryService;
         private readonly IPublisherService _publisherService;
         private readonly IStorageLocationService _storageLocationService;
-        private readonly ICirculationService _CirculationService;
+        private readonly ICirculationService _circulationService;
 
         private UserControl _currentControl;
         private Timer _debounceTimer;
@@ -44,13 +44,7 @@ namespace PersonalLibraryManagement
             _categoryService = categoryService;
             _publisherService = publisherService;
             _storageLocationService = storageLocationService;
-            _CirculationService = CirculationService;
-        }
-        public MainForm( IBookService bookService)
-        {
-            InitializeComponent();
-
-            _bookService = bookService;
+            _circulationService = CirculationService;
         }
 
         private void ShowUserControl(UserControl uc)
@@ -61,8 +55,6 @@ namespace PersonalLibraryManagement
                 _currentControl.Dispose();
                 _currentControl = null;
             }
-
-
 
             _currentControl = uc;
             panelRightView.Controls.Add(_currentControl);
@@ -119,12 +111,12 @@ namespace PersonalLibraryManagement
 
         private void OnBtnLendBorrowCtrlClick(object sender, EventArgs e)
         {
-            ShowUserControl(new UcLendBorrowManager());
+            ShowUserControl(new UcLendBorrowManager(_circulationService));
         }
 
         private void OnBtnBookManagerClick(object sender, EventArgs e)
         {
-            UcBookList uc = new UcBookList(_bookService);
+            UcBookList uc = new UcBookList(_bookService, _circulationService);
             uc.LoadBooksToListView();
 
             ShowUserControl(uc);
@@ -132,7 +124,7 @@ namespace PersonalLibraryManagement
 
         private void OnBtnAddBookClick(object sender, EventArgs e)
         {
-            ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _CirculationService));
+            ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _circulationService));
         }
 
         private void OnMainFormLoad(object sender, EventArgs e)

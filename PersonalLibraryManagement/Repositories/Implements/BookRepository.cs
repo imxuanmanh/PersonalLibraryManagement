@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using PersonalLibraryManagement.Enums;
 using PersonalLibraryManagement.Manager;
 using PersonalLibraryManagement.Models;
 using PersonalLibraryManagement.ViewModels;
@@ -149,7 +149,6 @@ namespace PersonalLibraryManagement.Repositories
             var authors = _authorRepository.GetAllAuthors();
             var categories = _categoryRepository.GetAllCategories();
             var publishers = _publisherRepository.GetAllPublishers();
-            var storageLocations = _storageLocationRepository.GetAllStorageLocations();
 
             return _books.ToDictionary(
                 pair => pair.Key,
@@ -160,8 +159,8 @@ namespace PersonalLibraryManagement.Repositories
                     string authorName = authors.TryGetValue(book.AuthorId ?? -1, out var author) ? author.Name : "Không rõ";
                     string categoryName = categories.TryGetValue(book.CategoryId ?? -1, out var category) ? category.Name : "Không rõ";
                     string publisherName = publishers.TryGetValue(book.PublisherId ?? -1, out var publisher) ? publisher.Name : "Không rõ";
-                    string storageLocationName = storageLocations.TryGetValue(book.StorageLocationId, out var loc) ? loc?.ToString() : "Không rõ";
-                    string status = _CirculationRepository.GetStatusByBookId(book.Id);
+                    string storageLocationName = _storageLocationRepository.GetStorageLocationById(book.StorageLocationId);
+                    CirculationStatus status = _CirculationRepository.GetStatusByBookId(book.Id);
 
                     return new BookViewModel(
                         book.Id,
@@ -169,7 +168,7 @@ namespace PersonalLibraryManagement.Repositories
                         authorName,
                         categoryName,
                         publisherName,
-                        book.PublishYear, // giữ nullable
+                        book.PublishYear, 
                         book.ImagePath,
                         book.Description,
                         status,

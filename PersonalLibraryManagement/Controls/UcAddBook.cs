@@ -13,6 +13,8 @@ using System.Windows.Forms;
 using System.IO;
 using PersonalLibraryManagement.Manager;
 using PersonalLibraryManagement.Interfaces;
+using System.Xml.Serialization;
+using System.Runtime.InteropServices;
 
 namespace PersonalLibraryManagement.Controls
 {
@@ -23,7 +25,7 @@ namespace PersonalLibraryManagement.Controls
         private readonly IAuthorService _authorService;
         private readonly IPublisherService _pulisherService;
         private readonly IStorageLocationService _storageLocationService;
-        private readonly ICirculationService _CirculationService;
+        private readonly ICirculationService _circulationService;
 
         public string SelectedImageName { get; private set; } = null;
         public string SelectedImagePath { get; private set; } = null;
@@ -36,7 +38,7 @@ namespace PersonalLibraryManagement.Controls
             IAuthorService authorService,
             IPublisherService publisherService,
             IStorageLocationService storageLocationService,
-            ICirculationService CirculationService
+            ICirculationService circulationService
             )
         {
             InitializeComponent();
@@ -45,7 +47,7 @@ namespace PersonalLibraryManagement.Controls
             _authorService = authorService;
             _pulisherService = publisherService;
             _storageLocationService = storageLocationService;
-            _CirculationService = CirculationService;
+            _circulationService = circulationService;
         }
 
         private void SetupCategoryComboBox()
@@ -83,39 +85,73 @@ namespace PersonalLibraryManagement.Controls
         }
         private void SetupRoomComboBox()
         {
-            var rooms = _storageLocationService.GetAllRooms().Values.ToList();
+            var rooms = _storageLocationService.GetAllRooms().Values
+                        .Select(r => new ComboBoxItem { Id = r.Id, Name = r.Name })
+                        .ToList();
 
-            rooms.Insert(0, new Room { Name = "-- Phòng --" });
-            rooms.Add(new Room { Name = "➕Thêm phòng" });
-            //shelves.Insert(0, "-- Kệ --");
-            //shelves.Add("➕Thêm kệ");
-            //rows.Insert(0, "-- Hàng --");
-            //rows.Add("➕Thêm hàng");
+            rooms.Insert(0, new ComboBoxItem { Id = 0, Name = "-- Phòng --" });
+            rooms.Add(new ComboBoxItem { Id = -1, Name = "➕Thêm phòng" });
 
             cboRoom.DataSource = rooms;
             cboRoom.DisplayMember = "Name";
             cboRoom.ValueMember = "Id";
-            //cboShelf.DataSource = shelves;
-            //cboRow.DataSource = rows;
+
+            cboRoom.Tag = "Room";
 
             cboRoom.SelectedIndexChanged += (s, e) =>
             {
-                var selectedRoom = cboRoom.SelectedItem as Room;
+                var selectedRoom = cboRoom.SelectedItem as ComboBoxItem;
 
                 if (selectedRoom == null)
                     return;
 
                 SetupShelfComboBox(selectedRoom.Id);
             };
-
-            cboRoom.Tag = "Room";
-            //cboShelf.Tag = "Shelf";
-            //cboRow.Tag = "Row";
         }
 
         private void SetupShelfComboBox(int roomId)
         {
+            List<ComboBoxItem> shelves = _storageLocationService.GetAllShelfByRoomId(roomId).Values
+                            .Select(s => new ComboBoxItem { Id = s.Id, Name = $"Kệ {s.Ordinal}" })
+                            .ToList();
 
+            shelves.Insert(0, new ComboBoxItem { Id = 0, Name = "-- Kệ --" });
+            shelves.Add(new ComboBoxItem { Id = -1, Name = "➕Thêm kệ" });
+
+            cboShelf.DataSource = shelves;
+            cboShelf.DisplayMember = "Name";
+            cboShelf.ValueMember = "Id";
+
+            cboShelf.Tag = "Shelf";
+
+            cboShelf.SelectedIndexChanged += (s, e) =>
+            {
+                var selectedShelf = cboShelf.SelectedItem as ComboBoxItem;
+
+                if (selectedShelf == null)
+                    return;
+
+                SetupShelfRowComboBox(selectedShelf.Id);
+            };
+        }
+
+        private void SetupShelfRowComboBox(int shelfId)
+        {
+            List<ComboBoxItem>  shelfRows = _storageLocationService.GetAllShelfRowByShelfId(shelfId).Values
+                                            .Select(sr => new ComboBoxItem { Id = sr.Id, Name = $"Hàng {sr.Ordinal}" })
+                                            .ToList();
+
+
+            shelfRows.Insert(0, new ComboBoxItem{ Id = 0, Name = "-- Hàng --" });
+            shelfRows.Add(new ComboBoxItem { Id = -1, Name = "➕Thêm hàng" });
+
+            System.Diagnostics.Debug.WriteLine($"Shelf row count: {shelfRows.Count}");
+
+            cboShelfRow.DataSource = shelfRows;
+            cboShelfRow.DisplayMember = "Name";
+            cboShelfRow.ValueMember = "Id";
+
+            cboShelfRow.Tag = "ShelfRow";
         }
 
         private void OnAddBookUCLoad(object sender, EventArgs e)
@@ -123,7 +159,8 @@ namespace PersonalLibraryManagement.Controls
             SetupAuthorComboBox();
             SetupCategoryComboBox();
             SetupPublisherComboBox();
-            // SetupStorageLocationComboBox();
+
+            SetupRoomComboBox();
 
             OnIsBorrowedCheckBoxCheckedChanged(null, EventArgs.Empty);
         }
@@ -142,9 +179,10 @@ namespace PersonalLibraryManagement.Controls
             }
         }
 
-        private async void OnComboBoxSelectedIndexChange(object sender, EventArgs e)
+        private async void OnComboBoxSelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox cbo = sender as ComboBox;
+
             if (cbo == null)
                 return;
 
@@ -198,7 +236,7 @@ namespace PersonalLibraryManagement.Controls
                     }
                     break;
 
-                case "Row":
+                case "ShelfRow":
                     {
                         title = "Thêm hàng";
                         header = "Số hàng";
@@ -231,7 +269,7 @@ namespace PersonalLibraryManagement.Controls
 
                 case "Category":
                     {
-
+                        
                     }
                     break;
 
@@ -243,126 +281,153 @@ namespace PersonalLibraryManagement.Controls
 
                 case "Room":
                     {
+                        int newRoomId = await _storageLocationService.AddRoomAsync(new Room { Name = value });
+
+                        if (newRoomId > 0)
+                        {
+                            SetupRoomComboBox();
+                            MessageBox.Show("Thêm phòng mới thành công");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm phòng mới thất bại");
+                        }
 
                     }
                     break;
 
                 case "Shelf":
                     {
+                        int roomId = (int)cboRoom.SelectedValue;
+                        if (!int.TryParse(value, out int ordinal))
+                        {
+                            MessageBox.Show("Số thứ tự kệ không hợp lệ");
+                        }
 
+                        int newShelfId = await _storageLocationService.AddShelfAsync(new Shelf { RoomId = roomId, Ordinal = ordinal });
+                        
+                        if (newShelfId > 0)
+                        {
+                            SetupShelfComboBox(roomId);
+                            MessageBox.Show("Thêm kệ mới thành công");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm kệ mới thất bại");
+                        }
                     }
                     break;
 
-                case "Row":
+                case "ShelfRow":
                     {
+                        int shelfId = (int)cboShelf.SelectedValue;
+                        if (!int.TryParse(value, out int ordinal))
+                        {
+                            MessageBox.Show("Số thứ tự hàng không hợp lệ");
+                            return;
+                        }
 
+                        int newShelfRowId = await _storageLocationService.AddShelfRowAsync(new ShelfRow { ShelfId = shelfId, Ordinal = ordinal});
+                        
+                        if (newShelfRowId > 0)
+                        {
+                            SetupShelfRowComboBox(shelfId);
+                            MessageBox.Show("Thêm hàng mới thành công");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm hàng mới thất bại");
+                        }
                     }
                     break;
             }
         }
 
-        private /*async */ void OnAddBookButtonClick(object sender, EventArgs e)
+        private async void OnAddBookButtonClick(object sender, EventArgs e)
         {
-            // if (string.IsNullOrEmpty(txtTittle.Text))
-            // {
-            //     MessageBox.Show("Tiêu đề sách không thể trống!");
-            //     return;
-            // }
+            if (string.IsNullOrEmpty(txtTittle.Text))
+            {
+                MessageBox.Show("Tiêu đề sách không thể trống!");
+                return;
+            }
 
-            // if
-            // (
-            //     cboRoom.SelectedIndex == 0 ||
-            //     cboShelf.SelectedIndex == 0 ||
-            //     cboRow.SelectedIndex == 0
-            // )
-            // {
-            //     MessageBox.Show("Vị trí lưu trữ không thể trống!");
-            //     return;
-            // }
-            // Book newBook = new Book
-            // {
-            //     Title = txtTittle.Text,
-            //     AuthorId = (int)cboAuthor.SelectedValue,
-            //     CategoryId = (int)cboCategory.SelectedValue,
-            //     PublisherId = (int)cboPublisher.SelectedValue,
-            //     PublishYear = int.TryParse(txtPublishYear.Text, out var result) ? result : (int?)null,
-            //     Description = txtDescription.Text,
-            //     ImagePath = SelectedImageName,
-            //     StorageLocationId = GetSelectedStorageLocationId()
-            // };
+            if (cboRoom.SelectedIndex == 0 ||
+                cboShelf.SelectedIndex == 0 ||
+                cboShelfRow.SelectedIndex == 0)
+            {
+                MessageBox.Show("Vị trí lưu trữ không thể trống!");
+                return;
+            }
+            Book newBook = new Book
+            {
+                Title = txtTittle.Text,
+                AuthorId = (int)cboAuthor.SelectedValue,
+                CategoryId = (int)cboCategory.SelectedValue,
+                PublisherId = (int)cboPublisher.SelectedValue,
+                PublishYear = int.TryParse(txtPublishYear.Text, out var result) ? result : (int?)null,
+                Description = txtDescription.Text,
+                ImagePath = SelectedImageName,
+                StorageLocationId = (int)cboShelfRow.SelectedValue
+            };
 
-            // int newBookId = await _bookService.AddBookAsync(newBook);
+            int newBookId = await _bookService.AddBookAsync(newBook);
 
-            // if (newBookId != -1 && chkIsBorrowed.Checked == true)
-            // {
-            //     Circulation newCirculation = new Circulation
-            //     {
-            //         BookId = newBookId,
-            //         LenderName = txtLender.Text,
-            //         MustReturnDate = dtpExpectedReturnDate.Value
-            //     };
+            if (newBookId == -1)
+            {
+                MessageBox.Show("Thêm sách thất bại, vui lòng thử lại!");
+                return;
+            }
 
-            //     // Biến vô danh (_) dùng để nhận kết quả, hiện chưa dùng tới
-            //     // Dự kiến sẽ dùng để kiểm tra và hủy transaction nếu không thành công (mở rộng sau)
-            //     _ = await _CirculationService.AddCirculationAsync(newCirculation);
-            // }
-            // try
-            // {
-            //     if (!File.Exists(SelectedImagePath))
-            //     {
-            //         MessageBox.Show("Ảnh nguồn không tồn tại!");
-            //         return;
-            //     }
+            if (chkIsBorrowed.Checked)
+            {
+                Circulation newCirculation = new Circulation
+                {
+                    BookId = newBookId,
+                    LenderName = txtLender.Text,
+                };
 
-            //     string destinationPath = Path.Combine(PathManager.ImageDir, SelectedImageName);
+                _ = await _circulationService.AddCirculationAsync(newCirculation);
+            }
 
-            //     if (File.Exists(destinationPath))
-            //     {
-            //         string nameWithoutExt = Path.GetFileNameWithoutExtension(SelectedImageName);
-            //         string ext = Path.GetExtension(SelectedImageName);
-            //         string uniqueName = $"{nameWithoutExt}_{DateTime.Now.Ticks}{ext}";
+            try
+            {
+                if (!File.Exists(SelectedImagePath))
+                {
+                    MessageBox.Show("Ảnh nguồn không tồn tại!");
+                    return;
+                }
 
-            //         SelectedImageName = uniqueName; // Cập nhật lại tên để lưu vào DB
-            //         destinationPath = Path.Combine(PathManager.ImageDir, uniqueName);
-            //     }
+                string destinationPath = Path.Combine(PathManager.ImageDir, SelectedImageName);
 
-            //     File.Move(SelectedImagePath, destinationPath);
+                if (File.Exists(destinationPath))
+                {
+                    string nameWithoutExt = Path.GetFileNameWithoutExtension(SelectedImageName);
+                    string ext = Path.GetExtension(SelectedImageName);
+                    string uniqueName = $"{nameWithoutExt}_{DateTime.Now.Ticks}{ext}";
 
-            //     MessageBox.Show("Ảnh đã được di chuyển!");
+                    SelectedImageName = uniqueName; // Cập nhật lại tên để lưu vào DB
+                    destinationPath = Path.Combine(PathManager.ImageDir, uniqueName);
+                }
 
-            // }
-            // catch (Exception ex)
-            // {
-            //     MessageBox.Show("Lỗi khi di chuyển ảnh: " + ex.Message);
-            // }
-            var storageLocations = _storageLocationService.GetAllStorageLocations();
+                File.Move(SelectedImagePath, destinationPath);
 
-            // Tạo dict mới với value là chuỗi đã chuẩn hóa
-            Dictionary<int, string> normalizedLocationDict = storageLocations
-                .ToDictionary(
-                    pair => pair.Key,
-                    pair => NormalizeString($"{pair.Value.Room}{pair.Value.Shelf}{pair.Value.Row}")
-                );
+                // MessageBox.Show("Ảnh đã được di chuyển!");
 
-            string loc = NormalizeString($"{cboRoom.SelectedValue.ToString()}{cboShelf.SelectedValue.ToString()}{cboRow.SelectedValue.ToString()}");
-            var matchedEntry = normalizedLocationDict
-    .FirstOrDefault(p => p.Value == loc);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi di chuyển ảnh: " + ex.Message);
+            }
 
-            if (matchedEntry.Key == 0 && matchedEntry.Value == null)
-                throw new InvalidOperationException("Không tìm thấy vị trí lưu trữ tương ứng.");
-
-            int matchedId = matchedEntry.Key;
-            MessageBox.Show(matchedId.ToString());
+            MessageBox.Show("Thêm sách thành công!");
         }
 
         private void OnSelectedImageButtonClick(object sender, EventArgs e)
         {
-
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Title = "Chọn hình minh họa";
                 openFileDialog.Filter = "Image Files (*.jpg; *.jpeg; *.png; *.bmp; *.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
-
                 openFileDialog.Multiselect = false;
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -370,41 +435,17 @@ namespace PersonalLibraryManagement.Controls
                     SelectedImagePath = openFileDialog.FileName;
                     SelectedImageName = Path.GetFileName(SelectedImagePath);
 
-                    pbImage.Image = Image.FromFile(SelectedImagePath);
+                    // Tải ảnh mà không khóa file
+                    using (var fs = new FileStream(SelectedImagePath, FileMode.Open, FileAccess.Read))
+                    {
+                        pbImage.Image = Image.FromStream(fs);
+                    }
+
                     pbImage.SizeMode = PictureBoxSizeMode.Zoom;
                 }
             }
 
             btnSelectImage.Visible = false;
-
-        }
-
-        private int GetSelectedStorageLocationId()
-        {
-            return 0;
-        }
-
-        public static string NormalizeString(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            // 1. Loại bỏ khoảng trắng
-            string noWhitespace = new string(input
-                .Where(c => !char.IsWhiteSpace(c))
-                .ToArray());
-
-            // 2. Chuyển về chữ thường
-            string lowerCased = noWhitespace.ToLowerInvariant();
-
-            // 3. Loại bỏ dấu tiếng Việt (normalize to FormD)
-            string normalizedFormD = lowerCased.Normalize(NormalizationForm.FormD);
-            string noDiacritics = new string(normalizedFormD
-                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                .ToArray());
-
-            // 4. Trả về dạng chuẩn (FormC)
-            return noDiacritics.Normalize(NormalizationForm.FormC);
         }
 
     }

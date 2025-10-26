@@ -12,18 +12,25 @@ using PersonalLibraryManagement.Manager;
 using System.IO;
 using PersonalLibraryManagement.ViewModels;
 using PersonalLibraryManagement.Interfaces;
+using System.Threading.Tasks;
 
 namespace PersonalLibraryManagement.Controls
 {
     public partial class UcBookList : UserControl, ISearchable
     {
         private readonly IBookService _bookService;
+        private readonly ICirculationService _circulationService;
 
         private Dictionary<int, BookViewModel> _allBookViewModels;
-        public UcBookList(IBookService service)
+
+        private ListViewItem _selectedItem;
+        private ContextMenuStrip contextMenu;
+        public UcBookList(IBookService service, ICirculationService circulationService)
         {
             InitializeComponent();
             _bookService = service;
+            _circulationService = circulationService;
+
             LoadAllBookViewModels();
         }
 
@@ -65,7 +72,22 @@ namespace PersonalLibraryManagement.Controls
             txtPublishYear.Text = book.PublishYear.ToString();
             txtDescription.Text = book.Description;
             txtStorageLocation.Text = book.StorageLocation;
-            txtLoanStatus.Text = book.Status;
+
+            switch (book.Status)
+            {
+                case Enums.CirculationStatus.Avaiable:
+                    txtLoanStatus.Text = "Có sẵn";
+                    break;
+
+                case Enums.CirculationStatus.Borrowed:
+                    txtLoanStatus.Text = "Đang mượn";
+                    break;
+
+                case Enums.CirculationStatus.Lent:
+                    txtLoanStatus.Text = "Đang cho mượn";
+                    break;
+            }
+            
         }
 
         public void Filter(string searchText)
@@ -124,6 +146,136 @@ namespace PersonalLibraryManagement.Controls
         {
             panelBookProperties.Visible = false;
             pbBackground.Visible = true;
+
+            contextMenu = new ContextMenuStrip();
+            contextMenu.Opening += OnContextMenuOpenning;
+
+            lvBooks.ContextMenuStrip = contextMenu;
+            lvBooks.MouseDown += OnBookListViewMouseDown;
+        }
+
+        private void OnBookListViewMouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                _selectedItem = lvBooks.GetItemAt(e.X, e.Y);
+            }
+        }
+
+        private void OnContextMenuOpenning(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            contextMenu.Items.Clear();
+
+            if (_selectedItem == null)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            BookViewModel selectedBook = _selectedItem.Tag as BookViewModel;
+
+            if (selectedBook == null)
+            {
+                return;
+            }
+
+            switch (selectedBook.Status)
+            {
+                case Enums.CirculationStatus.Avaiable:
+                    contextMenu.Items.Add(CreateMenuItem("Cho mượn sách", async (s, args) => await LendBook(selectedBook.Id)));
+                    break;
+
+                case Enums.CirculationStatus.Borrowed:
+                    contextMenu.Items.Add(CreateMenuItem("Trả sách", async (s, args) => await ReturnBook(selectedBook.Id)));
+                    break;
+
+                case Enums.CirculationStatus.Lent:
+                    contextMenu.Items.Add(CreateMenuItem("Thu hồi sách", async (s, args) => await RecallBook(selectedBook.Id)));
+                    break;
+            }
+
+        }
+
+        private async Task LendBook(int bookId)
+        {
+            using (LendForm lendForm = new LendForm())
+            {
+                if (lendForm.ShowDialog() == DialogResult.OK)
+                {
+                    int insertId = await _circulationService.LendBookAsync(bookId, lendForm.BorrowerName);
+
+                    if (insertId > 0)
+                    {
+                        if (_allBookViewModels.TryGetValue(bookId, out var book))
+                        {
+                            book.Status = Enums.CirculationStatus.Lent;
+                        }
+
+                        LoadBooksToListView();
+
+                        if (_selectedItem?.Tag is BookViewModel selectedBook && selectedBook.Id == bookId)
+                        {
+                            ShowBookDetails(selectedBook);
+                        }
+
+                        MessageBox.Show("Cho mượn sách thành công!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Đã xảy ra lỗi");
+                    }
+                }
+            }
+        }
+
+        private async Task RecallBook(int bookId)
+        {
+            bool result = await _circulationService.RecallBookAsync(bookId);
+
+            if (result)
+            {
+                if (_allBookViewModels.TryGetValue(bookId, out var book))
+                {
+                    book.Status = Enums.CirculationStatus.Avaiable;
+                }
+
+                LoadBooksToListView();
+
+                if (_selectedItem?.Tag is BookViewModel selectedBook && selectedBook.Id == bookId)
+                {
+                    ShowBookDetails(selectedBook);
+                }
+
+                MessageBox.Show("Hoàn tất circulation thành công!");
+            }
+            else
+            {
+                MessageBox.Show("Đã xảy ra lỗi khi trả/thu hồi sách.");
+            }
+        }
+
+        private async Task ReturnBook(int bookId)
+        {
+            bool result = await _circulationService.ReturnBookAsync(bookId);
+            if (result)
+            {
+                _allBookViewModels.Clear();
+                LoadAllBookViewModels();
+                LoadBooksToListView();
+
+                MessageBox.Show("Hoàn tất circulation thành công!");
+            }
+            else
+            {
+                MessageBox.Show("Đã xảy ra lỗi khi trả/thu hồi sách.");
+            }
+        }
+
+        private ToolStripMenuItem CreateMenuItem(string text, EventHandler onClick)
+        {
+            ToolStripMenuItem item = new ToolStripMenuItem(text);
+            item.Click += onClick;
+            return item;
         }
 
         public void HideBookProperties()

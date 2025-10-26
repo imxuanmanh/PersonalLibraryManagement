@@ -14,9 +14,9 @@ namespace PersonalLibraryManagement.Repositories
         private readonly IDbManager _dbManager;
         private Dictionary<int, StorageLocationViewModel> _storageLocations;
 
-        private Dictionary<int, Room> _rooms;
-        private Dictionary<int, Shelf> _shelves;
-        private Dictionary<int, ShelfRow> _shelfRows;
+        private Dictionary<int, Room> _rooms = new Dictionary<int, Room>();
+        private Dictionary<int, Shelf> _shelves = new Dictionary<int, Shelf>();
+        private Dictionary<int, ShelfRow> _shelfRows = new Dictionary<int, ShelfRow>();
 
         public StorageLocationRepository(IDbManager dbManager)
         {
@@ -45,6 +45,20 @@ namespace PersonalLibraryManagement.Repositories
                             .ToDictionary(r => r.Key, r => r.Value);
         }
 
+        public string GetStorageLocationById(int shelfRowId)
+        {
+            if (!_shelfRows.TryGetValue(shelfRowId, out var shelfRow))
+                return "Không xác định";
+
+            if (!_shelves.TryGetValue(shelfRow.ShelfId, out var shelf))
+                return "Không xác định";
+
+            if (!_rooms.TryGetValue(shelf.RoomId, out var room))
+                return "Không xác định";
+
+            return $"{room.Name} - Kệ {shelf.Ordinal} - Hàng {shelfRow.Ordinal}";
+        }
+
         public async Task<int> AddRoomAsync(Room room)
         {
             int insertedRoomId = await _dbManager.ExecuteScalarAsync<int>(
@@ -52,7 +66,7 @@ namespace PersonalLibraryManagement.Repositories
                 INSERT INTO 
                     Room (Name)
                 VALUES
-                    @name;
+                    (@name);
 
                 SELECT last_insert_rowid();
                 ",
@@ -74,7 +88,7 @@ namespace PersonalLibraryManagement.Repositories
                 INSERT INTO 
                     Shelf (RoomId, Ordinal)
                 VALUES
-                    @roomId, @ordinal;
+                    (@roomId, @ordinal);
 
                 SELECT last_insert_rowid();
                 ",
@@ -97,7 +111,7 @@ namespace PersonalLibraryManagement.Repositories
                 INSERT INTO 
                     ShelfRow (ShelfId, Ordinal)
                 VALUES
-                    @shelfId, @ordinal;
+                    (@shelfId, @ordinal);
 
                 SELECT last_insert_rowid();
                 ",

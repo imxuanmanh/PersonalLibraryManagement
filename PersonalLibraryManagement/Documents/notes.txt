@@ -1,0 +1,2 @@
+Sau khi cho mượn cần reload detail 
+Lưu snapshot local

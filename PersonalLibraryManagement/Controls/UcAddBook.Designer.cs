@@ -60,7 +60,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.cboRow = new System.Windows.Forms.ComboBox();
+            this.cboShelfRow = new System.Windows.Forms.ComboBox();
             this.cboShelf = new System.Windows.Forms.ComboBox();
             this.cboRoom = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -116,7 +116,7 @@
             this.cboAuthor.Size = new System.Drawing.Size(161, 27);
             this.cboAuthor.TabIndex = 1;
             this.cboAuthor.Tag = "Author";
-            this.cboAuthor.SelectedIndexChanged += new System.EventHandler(this.OnComboBoxSelectedIndexChange);
+            this.cboAuthor.SelectedIndexChanged += new System.EventHandler(this.OnComboBoxSelectedIndexChanged);
             // 
             // label2
             // 
@@ -413,7 +413,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.panel3.Controls.Add(this.cboRow);
+            this.panel3.Controls.Add(this.cboShelfRow);
             this.panel3.Controls.Add(this.cboShelf);
             this.panel3.Controls.Add(this.cboRoom);
             this.panel3.Controls.Add(this.label4);
@@ -423,14 +423,15 @@
             this.panel3.Size = new System.Drawing.Size(557, 45);
             this.panel3.TabIndex = 1;
             // 
-            // cboRow
+            // cboShelfRow
             // 
-            this.cboRow.FormattingEnabled = true;
-            this.cboRow.Location = new System.Drawing.Point(421, 7);
-            this.cboRow.Name = "cboRow";
-            this.cboRow.Size = new System.Drawing.Size(121, 27);
-            this.cboRow.TabIndex = 1;
-            this.cboRow.Tag = "Row";
+            this.cboShelfRow.FormattingEnabled = true;
+            this.cboShelfRow.Location = new System.Drawing.Point(421, 7);
+            this.cboShelfRow.Name = "cboShelfRow";
+            this.cboShelfRow.Size = new System.Drawing.Size(121, 27);
+            this.cboShelfRow.TabIndex = 1;
+            this.cboShelfRow.Tag = "Row";
+            this.cboShelfRow.SelectedIndexChanged += new System.EventHandler(this.OnComboBoxSelectedIndexChanged);
             // 
             // cboShelf
             // 
@@ -440,6 +441,7 @@
             this.cboShelf.Size = new System.Drawing.Size(121, 27);
             this.cboShelf.TabIndex = 1;
             this.cboShelf.Tag = "Shelf";
+            this.cboShelf.SelectedIndexChanged += new System.EventHandler(this.OnComboBoxSelectedIndexChanged);
             // 
             // cboRoom
             // 
@@ -449,6 +451,7 @@
             this.cboRoom.Size = new System.Drawing.Size(121, 27);
             this.cboRoom.TabIndex = 1;
             this.cboRoom.Tag = "Room";
+            this.cboRoom.SelectedIndexChanged += new System.EventHandler(this.OnComboBoxSelectedIndexChanged);
             // 
             // label4
             // 
@@ -527,7 +530,7 @@
         private System.Windows.Forms.ComboBox cboAuthor;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox cboRow;
+        private System.Windows.Forms.ComboBox cboShelfRow;
         private System.Windows.Forms.ComboBox cboShelf;
         private System.Windows.Forms.ComboBox cboRoom;
     }
