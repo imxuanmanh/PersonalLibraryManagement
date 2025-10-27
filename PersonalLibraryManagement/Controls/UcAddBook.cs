@@ -275,7 +275,7 @@ namespace PersonalLibraryManagement.Controls
 
                 case "Publisher":
                     {
-
+                        
                     }
                     break;
 
@@ -343,6 +343,7 @@ namespace PersonalLibraryManagement.Controls
             }
         }
 
+        /*
         private async void OnAddBookButtonClick(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtTittle.Text))
@@ -380,9 +381,11 @@ namespace PersonalLibraryManagement.Controls
 
             if (chkIsBorrowed.Checked)
             {
+                
                 Circulation newCirculation = new Circulation
                 {
                     BookId = newBookId,
+                    BookTitleSnapshot = newBook.Title,
                     LenderName = txtLender.Text,
                 };
 
@@ -419,7 +422,123 @@ namespace PersonalLibraryManagement.Controls
                 MessageBox.Show("Lỗi khi di chuyển ảnh: " + ex.Message);
             }
 
+            ResetForm();
+
             MessageBox.Show("Thêm sách thành công!");
+        }
+        */
+
+        private async void OnAddBookButtonClick(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtTittle.Text))
+            {
+                MessageBox.Show("Tiêu đề sách không thể trống!");
+                return;
+            }
+
+            if (cboRoom.SelectedIndex == 0 ||
+                cboShelf.SelectedIndex == 0 ||
+                cboShelfRow.SelectedIndex == 0)
+            {
+                MessageBox.Show("Vị trí lưu trữ không thể trống!");
+                return;
+            }
+
+            // ---- Xử lý ảnh trước khi tạo Book ----
+            string imageNameToSave;
+
+            try
+            {
+                if (string.IsNullOrEmpty(SelectedImagePath) || !File.Exists(SelectedImagePath))
+                {
+                    // Ảnh không chọn hoặc không tồn tại → dùng ảnh mặc định
+                    imageNameToSave = "place-holder.png"; // file này cần có sẵn trong thư mục ImageDir
+                }
+                else
+                {
+                    imageNameToSave = SelectedImageName;
+                    string destinationPath = Path.Combine(PathManager.ImageDir, imageNameToSave);
+
+                    // Nếu trùng tên → tạo tên mới
+                    if (File.Exists(destinationPath))
+                    {
+                        string nameWithoutExt = Path.GetFileNameWithoutExtension(SelectedImageName);
+                        string ext = Path.GetExtension(SelectedImageName);
+                        string uniqueName = $"{nameWithoutExt}_{DateTime.Now.Ticks}{ext}";
+
+                        imageNameToSave = uniqueName;
+                        destinationPath = Path.Combine(PathManager.ImageDir, uniqueName);
+                    }
+
+                    // Di chuyển ảnh (copy an toàn hơn move)
+                    File.Copy(SelectedImagePath, destinationPath, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi, fallback sang ảnh mặc định, không hiển thị cảnh báo
+                imageNameToSave = "place-holder.png";
+                Console.WriteLine("Lỗi khi xử lý ảnh: " + ex.Message);
+            }
+
+            // ---- Tạo đối tượng sách ----
+            Book newBook = new Book
+            {
+                Title = txtTittle.Text,
+                AuthorId = (int)cboAuthor.SelectedValue,
+                CategoryId = (int)cboCategory.SelectedValue,
+                PublisherId = (int)cboPublisher.SelectedValue,
+                PublishYear = int.TryParse(txtPublishYear.Text, out var result) ? result : (int?)null,
+                Description = txtDescription.Text,
+                ImagePath = imageNameToSave, // luôn có ảnh hợp lệ
+                StorageLocationId = (int)cboShelfRow.SelectedValue
+            };
+
+            int newBookId = await _bookService.AddBookAsync(newBook);
+
+            if (newBookId == -1)
+            {
+                MessageBox.Show("Thêm sách thất bại, vui lòng thử lại!");
+                return;
+            }
+
+            // ---- Nếu sách đang được mượn ----
+            if (chkIsBorrowed.Checked)
+            {
+                Circulation newCirculation = new Circulation
+                {
+                    BookId = newBookId,
+                    BookTitleSnapshot = newBook.Title,
+                    LenderName = txtLender.Text,
+                };
+
+                _ = await _circulationService.AddCirculationAsync(newCirculation);
+            }
+
+            ResetForm();
+            MessageBox.Show("Thêm sách thành công!");
+        }
+
+        private void ResetForm()
+        {
+            txtTittle.Text = string.Empty;
+            txtDescription.Text = string.Empty;
+            txtLender.Text = string.Empty;
+
+            cboAuthor.SelectedIndex = 0;
+            cboCategory.SelectedIndex = 0;
+            cboPublisher.SelectedIndex = 0;
+            cboRoom.SelectedIndex = 0;
+            cboShelf.SelectedIndex = 0;
+            cboShelfRow.SelectedIndex = 0;
+
+            btnSelectImage.Visible = true;
+            
+            if (pbImage.Image != null)
+            {
+                pbImage.Image.Dispose();
+                pbImage.Image = null;
+            }
         }
 
         private void OnSelectedImageButtonClick(object sender, EventArgs e)

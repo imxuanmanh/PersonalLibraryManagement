@@ -43,10 +43,17 @@ namespace PersonalLibraryManagement.Services
 
         public async Task<int> LendBookAsync(int bookId, string borrowerName)
         {
+            Book book = _bookRepository.GetBookById(bookId);
+
+            if (book == null)
+            {
+                return -1;
+            }
 
             Circulation lendCirculation = new Circulation
             {
                 BookId = bookId,
+                BookTitleSnapshot = book.Title,
                 BorrowerName = borrowerName,
                 CirculationDate = DateTime.Now
             };

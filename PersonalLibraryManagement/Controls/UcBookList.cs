@@ -246,11 +246,11 @@ namespace PersonalLibraryManagement.Controls
                     ShowBookDetails(selectedBook);
                 }
 
-                MessageBox.Show("Hoàn tất circulation thành công!");
+                MessageBox.Show("Thu hồi sách thành công!");
             }
             else
             {
-                MessageBox.Show("Đã xảy ra lỗi khi trả/thu hồi sách.");
+                MessageBox.Show("Đã xảy ra lỗi khi thu hồi sách.");
             }
         }
 
@@ -263,11 +263,11 @@ namespace PersonalLibraryManagement.Controls
                 LoadAllBookViewModels();
                 LoadBooksToListView();
 
-                MessageBox.Show("Hoàn tất circulation thành công!");
+                MessageBox.Show("Trả sách thành công!");
             }
             else
             {
-                MessageBox.Show("Đã xảy ra lỗi khi trả/thu hồi sách.");
+                MessageBox.Show("Đã xảy ra lỗi khi trả sách.");
             }
         }
 

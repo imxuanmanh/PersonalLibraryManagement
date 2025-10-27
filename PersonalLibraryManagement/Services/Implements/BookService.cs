@@ -37,7 +37,7 @@ namespace PersonalLibraryManagement.Services
 
         public Book GetBookById(int id)
         {
-            return new Book();
+            return _repository.GetBookById(id);
         }
 
     }
