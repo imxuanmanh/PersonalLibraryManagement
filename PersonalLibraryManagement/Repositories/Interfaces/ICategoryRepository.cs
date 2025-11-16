@@ -10,6 +10,7 @@ namespace PersonalLibraryManagement.Repositories
     public interface ICategoryRepository
     {
         Task LoadAsync();
+        Task<int> AddAsync(Category category);
         Dictionary<int, Category> GetAllCategories();
     }
 }

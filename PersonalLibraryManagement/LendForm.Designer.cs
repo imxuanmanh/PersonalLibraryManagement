@@ -36,26 +36,26 @@
             // txtBorrowerName
             // 
             this.txtBorrowerName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtBorrowerName.Location = new System.Drawing.Point(44, 54);
+            this.txtBorrowerName.Location = new System.Drawing.Point(17, 49);
             this.txtBorrowerName.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.txtBorrowerName.Name = "txtBorrowerName";
-            this.txtBorrowerName.Size = new System.Drawing.Size(176, 31);
+            this.txtBorrowerName.Size = new System.Drawing.Size(228, 36);
             this.txtBorrowerName.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(40, 25);
+            this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(180, 23);
+            this.label1.Size = new System.Drawing.Size(233, 29);
             this.label1.TabIndex = 1;
             this.label1.Text = "Nhập tên người mượn";
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(84, 94);
+            this.btnConfirm.Location = new System.Drawing.Point(68, 94);
             this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(94, 37);
+            this.btnConfirm.Size = new System.Drawing.Size(126, 37);
             this.btnConfirm.TabIndex = 2;
             this.btnConfirm.Text = "Xác nhận";
             this.btnConfirm.UseVisualStyleBackColor = true;
@@ -63,7 +63,7 @@
             // 
             // LendForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(261, 161);
             this.Controls.Add(this.btnConfirm);

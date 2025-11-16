@@ -16,6 +16,11 @@ namespace PersonalLibraryManagement.Services
         {
             _categoryRepository = categoryRepository;
         }
+
+        public async Task<bool> AddCategoryAsync(Category category)
+        {
+            return await _categoryRepository.AddAsync(category) > 0;
+        }
         public Dictionary<int, Category> GetAllCategories()
         {
             return _categoryRepository.GetAllCategories();

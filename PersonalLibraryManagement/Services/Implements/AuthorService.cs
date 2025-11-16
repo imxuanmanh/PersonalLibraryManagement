@@ -21,9 +21,9 @@ namespace PersonalLibraryManagement.Services
             return _authorRepository.GetAllAuthors();
         }
 
-        public async Task AddAuthorAsync(Author author)
+        public async Task<bool> AddAuthorAsync(Author author)
         {
-            await _authorRepository.AddAsync(author);
+            return await _authorRepository.AddAsync(author) > 0;
         }
     }
 }

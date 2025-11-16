@@ -26,7 +26,7 @@ namespace PersonalLibraryManagement.Repositories
                 );
         }
 
-        public async Task AddAsync(Author author)
+        public async Task<int> AddAsync(Author author)
         {
             int insertedAuthorId = await _dbManager.ExecuteScalarAsync<int>(
                 @"
@@ -45,7 +45,10 @@ namespace PersonalLibraryManagement.Repositories
 
 
                 _authors[insertedAuthorId] = author;
+                return insertedAuthorId;
             }
+
+            return -1;
         }
 
         public Dictionary<int, Author> GetAllAuthors()

@@ -230,24 +230,26 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\around.png" />
+    <None Include="Icon\around.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\book.png" />
+    <None Include="Icon\book.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\refresh.png" />
+    <None Include="Icon\refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\search.png" />
+    <None Include="Icon\search.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\stats.png" />
+    <None Include="Icon\stats.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="icon\add.png" />
+    <None Include="Icon\add.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Icon\close.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Images\bookshelf.png" />
   </ItemGroup>

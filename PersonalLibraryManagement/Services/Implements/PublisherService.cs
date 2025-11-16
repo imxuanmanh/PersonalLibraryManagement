@@ -17,6 +17,11 @@ namespace PersonalLibraryManagement.Services
             _publisherRepository = publisherRepository;
         }
 
+        public async Task<bool> AddPublisherAsync(Publisher publisher)
+        {
+            return await _publisherRepository.AddAsync(publisher) > 0;
+        }
+
         public Dictionary<int, Publisher> GetAllPublishers()
         {
             return _publisherRepository.GetAllPublishers();

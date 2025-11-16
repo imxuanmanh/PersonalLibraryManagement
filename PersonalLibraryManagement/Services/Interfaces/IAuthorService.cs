@@ -10,6 +10,6 @@ namespace PersonalLibraryManagement.Services
     public interface IAuthorService
     {
         Dictionary<int, Author> GetAllAuthors();
-        Task AddAuthorAsync(Author author);
+        Task<bool> AddAuthorAsync(Author author);
     }
 }

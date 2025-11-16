@@ -35,7 +35,7 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(89, 128);
+            this.btnAdd.Location = new System.Drawing.Point(78, 117);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(112, 34);
@@ -47,23 +47,24 @@
             // lblHeader
             // 
             this.lblHeader.AutoSize = true;
-            this.lblHeader.Location = new System.Drawing.Point(107, 45);
+            this.lblHeader.Location = new System.Drawing.Point(99, 34);
             this.lblHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHeader.Name = "lblHeader";
-            this.lblHeader.Size = new System.Drawing.Size(54, 19);
+            this.lblHeader.Size = new System.Drawing.Size(68, 22);
             this.lblHeader.TabIndex = 1;
             this.lblHeader.Text = "Header";
             // 
             // txtInput
             // 
-            this.txtInput.Location = new System.Drawing.Point(65, 81);
+            this.txtInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtInput.Location = new System.Drawing.Point(51, 70);
             this.txtInput.Name = "txtInput";
-            this.txtInput.Size = new System.Drawing.Size(163, 26);
+            this.txtInput.Size = new System.Drawing.Size(163, 30);
             this.txtInput.TabIndex = 2;
             // 
             // FormAddItem
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(287, 187);
             this.Controls.Add(this.txtInput);

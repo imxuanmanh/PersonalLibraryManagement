@@ -33,7 +33,7 @@ namespace PersonalLibraryManagement
             ICategoryRepository categoryRepository = new CategoryRepository(dbManager);
             IPublisherRepository publisherRepository = new PublisherRepository(dbManager);
             IStorageLocationRepository storageLocationRepository = new StorageLocationRepository(dbManager);
-            ICirculationRepository circulationRepository = new CirculationRepository(dbManager);
+            Repositories.ICirculationRepository circulationRepository = new CirculationRepository(dbManager);
 
             await Task.WhenAll(
                 authorRepository.LoadAsync(),
@@ -43,7 +43,7 @@ namespace PersonalLibraryManagement
                 circulationRepository.LoadAsync()
             );
 
-            IBookRepository bookRepository = new BookRepository(
+            Repositories.IBookRepository bookRepository = new BookRepository(
                 dbManager, authorRepository,
                 categoryRepository,
                 publisherRepository,
@@ -54,11 +54,11 @@ namespace PersonalLibraryManagement
             await bookRepository.LoadAsync();
 
             IAuthorService authorService = new AuthorService(authorRepository);
-            IBookService bookService = new BookService(bookRepository);
+            Services.IBookService bookService = new BookService(bookRepository);
             ICategoryService categoryService = new CategoryService(categoryRepository);
             IPublisherService publisherService = new PublisherService(publisherRepository);
             IStorageLocationService storageLocationService = new StorageLocationService(storageLocationRepository);
-            ICirculationService CirculationService = new CirculationService(bookRepository, circulationRepository);
+            Services.ICirculationService CirculationService = new CirculationService(bookRepository, circulationRepository);
 
             MainForm mainForm = new MainForm(
                 authorService,

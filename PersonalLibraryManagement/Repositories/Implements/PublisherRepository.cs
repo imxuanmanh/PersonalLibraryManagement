@@ -1,6 +1,6 @@
 ﻿using PersonalLibraryManagement.Manager;
 using PersonalLibraryManagement.Models;
-using System;
+using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +16,31 @@ namespace PersonalLibraryManagement.Repositories
         public PublisherRepository(IDbManager dbManager)
         {
             _dbManager = dbManager;
+        }
+
+        public async Task<int> AddAsync(Publisher publisher)
+        {
+            int insertedPublisherId = await _dbManager.ExecuteScalarAsync<int>(
+                @"
+                    INSERT INTO
+                        Publisher(Name)
+
+                    VALUES
+                        (@name);
+
+                    SELECT last_insert_rowid();
+                ",
+                new SqliteParameter("name", publisher.Name)
+                );
+
+            if (insertedPublisherId > 0)
+            {
+                publisher.Id = insertedPublisherId;
+                _publishers[insertedPublisherId] = publisher;
+                return insertedPublisherId;
+            }
+
+            return -1;
         }
 
         public async Task LoadAsync()

@@ -29,6 +29,11 @@ namespace PersonalLibraryManagement
         private Timer _debounceTimer;
 
         private string PlaceholderText = "Nhập từ khóa ...";
+        private string _currentKeyword = "";
+        private string _currentCategory = "";
+        private string _currentAuthor = "";
+
+        public event EventHandler<string> SearchTextChanged;
 
         public MainForm(IAuthorService authorService,
                         IBookService bookService, 
@@ -68,25 +73,45 @@ namespace PersonalLibraryManagement
         {
             Dictionary<int, Category> categories = _categoryService.GetAllCategories();
 
-            // Chuyển sang Dictionary<int, string> với key là Id, value là Name
             Dictionary<int, string> categoryNames = categories.ToDictionary(
                 pair => pair.Key,
                 pair => pair.Value.Name
             );
 
-            int x = 5; // vị trí bắt đầu theo trục X
-            int y = 5; // vị trí bắt đầu theo trục Y
-            int count = 0; // đếm số nút trong 1 hàng
+            int x = 5;
+            int y = 5;
+            int count = 0;
 
-            int buttonWidth = 110; // chiều rộng nút
-            int buttonHeight = 30; // chiều cao nút
-            int spacing = 7; // khoảng cách giữa các nút
+            int buttonWidth = 110;
+            int buttonHeight = 30;
+            int spacing = 7;
 
+            // --- Nút "Tất cả"
+            Button btnAll = new Button();
+            btnAll.Text = "Tất cả";
+            btnAll.Size = new Size(buttonWidth, buttonHeight);
+            btnAll.Location = new Point(x, y);
+            btnAll.Font = new Font("Times New Roman", 10);
+            btnAll.Click += (s, e) =>
+            {
+                _currentCategory = "";
+                if (_currentControl is UcBookList ucBookList)
+                {
+                    ucBookList.Filter(_currentKeyword, _currentCategory, null);
+                }
+            };
+            pnCategoryList.Controls.Add(btnAll);
+
+            // Cập nhật toạ độ sau khi thêm nút "Tất cả"
+            count = 1;
+            x += buttonWidth + spacing;
+
+            // --- Thêm các nút thể loại
             foreach (var pair in categoryNames)
             {
                 Button btn = new Button();
-                btn.Text = pair.Value; // hiển thị tên category
-                btn.Tag = pair.Key;    // lưu Id vào Tag để sử dụng khi click
+                btn.Text = pair.Value;
+                btn.Tag = pair.Key;
                 btn.Size = new Size(buttonWidth, buttonHeight);
                 btn.Location = new Point(x, y);
                 btn.Font = new Font("Times New Roman", 10);
@@ -103,14 +128,14 @@ namespace PersonalLibraryManagement
                 }
                 else
                 {
-                    x += buttonWidth + spacing; // đặt nút tiếp theo bên phải
+                    x += buttonWidth + spacing;
                 }
             }
         }
 
-
         private void OnBtnLendBorrowCtrlClick(object sender, EventArgs e)
         {
+            gbCategoryList.Visible = false;
             ShowUserControl(new UcLendBorrowManager(_circulationService));
         }
 
@@ -118,30 +143,31 @@ namespace PersonalLibraryManagement
         {
             UcBookList uc = new UcBookList(_bookService, _circulationService);
             uc.LoadBooksToListView();
+            gbCategoryList.Visible = true;
 
             ShowUserControl(uc);
         }
 
         private void OnBtnAddBookClick(object sender, EventArgs e)
         {
+            gbCategoryList.Visible = false;
             ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _circulationService));
         }
 
         private void OnMainFormLoad(object sender, EventArgs e)
         {
-            // MessageBox.Show(PathManager.ImageDir);
             LoadCategoryGroupBox();
             this.ActiveControl = null;
             SetSearchBoxPlaceHolder();
             txtSearchBox.TextChanged += OnSearchBoxTextChanged;
 
-            // Mở mặc định danh sách sách
             OnBtnBookManagerClick(null, EventArgs.Empty);
         }
 
         private void OnBtnStatsClick(object sender, EventArgs e)
         {
-            ShowUserControl(new UcStats());
+            ShowUserControl(new UcStats(_bookService, _circulationService, _authorService, _categoryService));
+            gbCategoryList.Visible = false;
         }
 
         private void OnCategoryButtonClick(object sender, EventArgs e)
@@ -150,13 +176,25 @@ namespace PersonalLibraryManagement
 
             if (btn == null) return;
 
+            _currentCategory = btn.Text;
+
             string category = btn.Text;
-            MessageBox.Show("Bạn đã chọn thể loại: " + category);
+            // MessageBox.Show("Bạn đã chọn thể loại: " + category);
+
+            if (_currentControl is UcBookList ucBookList)
+            {
+                ucBookList.Filter(_currentKeyword, _currentCategory, _currentAuthor);
+            }
         }
 
         private void OnSearchBoxTextChanged(object sender, EventArgs e)
         {
             if (txtSearchBox.ForeColor == Color.Gray) return;
+
+            if (_currentControl is UcLendBorrowManager ucLendBorrow)
+            {
+                ucLendBorrow.OnSearchKeywordChanged(txtSearchBox.Text.Trim());
+            }
 
             if (_debounceTimer == null)
             {
@@ -169,9 +207,13 @@ namespace PersonalLibraryManagement
                     // ❌ Bỏ qua khi text là placeholder
                     if (txtSearchBox.Text == PlaceholderText) return;
 
-                    if (_currentControl is ISearchable searchable)
+                    _currentKeyword = txtSearchBox.Text.Trim();
+
+                    SearchTextChanged?.Invoke(this, _currentKeyword);
+
+                    if (_currentControl is UcBookList ucBookList)
                     {
-                        searchable.Filter(txtSearchBox.Text);
+                        ucBookList.Filter(_currentKeyword, _currentCategory, _currentAuthor);
                     }
                 };
             }

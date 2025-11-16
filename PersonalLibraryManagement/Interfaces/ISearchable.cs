@@ -8,6 +8,8 @@ namespace PersonalLibraryManagement.Interfaces
 {
     public interface ISearchable
     {
-        void Filter(string searchText);
+        // void Filter(string searchText);
+
+        void Filter(string keyword = "", string category = "", string author = "");
     }
 }

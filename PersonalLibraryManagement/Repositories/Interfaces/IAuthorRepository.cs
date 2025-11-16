@@ -10,7 +10,7 @@ namespace PersonalLibraryManagement.Repositories
     public interface IAuthorRepository
     {
         Task LoadAsync();
-        Task AddAsync(Author author);
+        Task<int> AddAsync(Author author);
         Dictionary<int, Author> GetAllAuthors();
     }
 }

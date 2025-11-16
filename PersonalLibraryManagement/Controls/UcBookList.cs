@@ -90,33 +90,33 @@ namespace PersonalLibraryManagement.Controls
             
         }
 
-        public void Filter(string searchText)
+        public void Filter(string keyword = "", string category = "", string author = "")
         {
-            string keyword = searchText?.Trim().ToLower() ?? "";
-
-            if (string.IsNullOrEmpty(keyword))
-            {
-                LoadBooksToListView();
-            }
+            keyword = keyword?.Trim().ToLower() ?? "";
+            category = category?.Trim().ToLower() ?? "";
+            author = author?.Trim().ToLower() ?? "";
 
             lvBooks.BeginUpdate();
             lvBooks.Items.Clear();
 
-            foreach (BookViewModel bvm in _allBookViewModels.Values)
+            IEnumerable<BookViewModel> filteredBooks = _allBookViewModels.Values.Where(bvm =>
+                (string.IsNullOrEmpty(keyword) || bvm.Title.ToLower().Contains(keyword)) &&
+                (string.IsNullOrEmpty(category) || bvm.Category.ToLower().Contains(category)) &&
+                (string.IsNullOrEmpty(author) || bvm.Author.ToLower().Contains(author))
+            );
+
+            foreach (var bvm in filteredBooks)
             {
-                if (bvm.Title.ToLower().Contains(keyword))
-                {
-                    ListViewItem item = new ListViewItem(bvm.Title);
-                    item.SubItems.Add(bvm.Author);
-                    item.SubItems.Add(bvm.Category);
-                    item.Tag = bvm;
-                    lvBooks.Items.Add(item);
-                }
+                ListViewItem item = new ListViewItem(bvm.Title);
+                item.SubItems.Add(bvm.Author);
+                item.SubItems.Add(bvm.Category);
+                item.Tag = bvm;
+                lvBooks.Items.Add(item);
             }
+
             lvBooks.EndUpdate();
         }
 
-        // Khóa kích thước cho cột của ListView bằng cách đặt lại kích thước và hủy sự kiện
         private void OnLvBooksColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
         {
             e.NewWidth = lvBooks.Columns[e.ColumnIndex].Width;

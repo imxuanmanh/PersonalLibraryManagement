@@ -10,5 +10,6 @@ namespace PersonalLibraryManagement.Services
     public interface ICategoryService
     {
         Dictionary<int, Category> GetAllCategories();
+        Task<bool> AddCategoryAsync(Category category);
     }
 }

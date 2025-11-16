@@ -14,8 +14,8 @@ namespace PersonalLibraryManagement.Services
     public class BookService : IBookService
     {
 
-        private readonly IBookRepository _repository;
-        public BookService(IBookRepository bookRepository)
+        private readonly Repositories.IBookRepository _repository;
+        public BookService(Repositories.IBookRepository bookRepository)
         {
             _repository = bookRepository;
         }

@@ -23,7 +23,11 @@ namespace PersonalLibraryManagement.Repositories
         public async Task LoadAsync()
         {
             _circulations = await _dbManager.ExecuteQueryAsync<Circulation>(
-                @"SELECT Id, BookId, BookTitleSnapshot, BorrowerName, LenderName, CirculationDate, ReturnDate FROM Circulation"
+                @"
+                SELECT 
+                    Id, BookId, BookTitleSnapshot, BorrowerName, LenderName, CirculationDate, ReturnDate 
+
+                FROM Circulation;"
                 );
         }
 
@@ -63,7 +67,16 @@ namespace PersonalLibraryManagement.Repositories
 
             var now = DateTime.Now;
             int rows = await _dbManager.ExecuteNonQueryAsync(
-                @"UPDATE Circulation SET ReturnDate = @returnDate WHERE Id = @circulationId;",
+                @"
+                UPDATE 
+                    Circulation 
+                
+                SET 
+                    ReturnDate = @returnDate 
+                
+                WHERE 
+                    Id = @circulationId;
+                ",
                 new SqliteParameter("@returnDate", now),
                 new SqliteParameter("@circulationId", active.Id)
             );
@@ -101,21 +114,8 @@ namespace PersonalLibraryManagement.Repositories
 
         public Circulation GetActiveCirculationByBookId(int bookId)
         {
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Tìm circulation chưa hoàn thành cho BookId={bookId}");
-
-            var active = _circulations.Values
+            return _circulations.Values
                 .FirstOrDefault(c => c.BookId == bookId && c.ReturnDate == null);
-
-            if (active == null)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Không tìm thấy circulation active cho BookId={bookId}");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Tìm thấy circulation Id={active.Id}, Borrower={active.BorrowerName}, ReturnDate={active.ReturnDate}");
-            }
-
-            return active;
         }
 
 
@@ -140,31 +140,7 @@ namespace PersonalLibraryManagement.Repositories
                 }
             }
 
-            // tất cả đã trả
             return CirculationStatus.Avaiable;
         }
-
-        //public string GetStatusByBookId(int bookId)
-        //{
-        //    if (_circulations.TryGetValue(bookId, out var circulation))
-        //    {
-        //        if (circulation.CirculationDate == null)
-        //        {
-        //            return "Có sẵn"; // sách chưa ai mượn
-        //        }
-        //        else if (!string.IsNullOrEmpty(circulation.BorrowerName))
-        //        {
-        //            return $"Đang cho {circulation.BorrowerName} mượn"; // sách đang được mượn
-        //        }
-        //        else if (!string.IsNullOrEmpty(circulation.LenderName))
-        //        {
-        //            return $"Mượn của {circulation.LenderName}"; // sách mượn về thủ thư
-        //        }
-        //    }
-
-        //    // nếu không có lịch sử hoặc không thỏa điều kiện nào → mặc định có sẵn
-        //    return "Có sẵn";
-        //}
-
     }
 }

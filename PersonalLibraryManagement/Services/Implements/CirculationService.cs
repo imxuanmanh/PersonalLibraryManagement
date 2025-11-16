@@ -10,10 +10,10 @@ namespace PersonalLibraryManagement.Services
 {
     public class CirculationService : ICirculationService
     {
-        private readonly IBookRepository _bookRepository;
-        private readonly ICirculationRepository _circulationRepository;
+        private readonly Repositories.IBookRepository _bookRepository;
+        private readonly Repositories.ICirculationRepository _circulationRepository;
 
-        public CirculationService(IBookRepository bookRepository, ICirculationRepository circulationRepository)
+        public CirculationService(Repositories.IBookRepository bookRepository, Repositories.ICirculationRepository circulationRepository)
         {
             _bookRepository = bookRepository;
             _circulationRepository = circulationRepository;
@@ -24,23 +24,13 @@ namespace PersonalLibraryManagement.Services
             return _circulationRepository.GetAllCirculations();
         }
 
+        // Thêm một giao dịch
         public async Task<int> AddCirculationAsync(Circulation Circulation)
         {
             return await _circulationRepository.AddAsync(Circulation);
         }
 
-        public async Task<bool> RecallBookAsync(int bookId)
-        {
-            return await _circulationRepository.RecallAsync(bookId);
-        }
-        public async Task<bool> ReturnBookAsync(int bookId)
-        {
-            bool circulationOk = await _circulationRepository.ReturnAsync(bookId);
-            bool deleteOk = await _bookRepository.DeleteAsync(bookId);
-
-            return circulationOk && deleteOk;
-        }
-
+        // Cho mượn sách
         public async Task<int> LendBookAsync(int bookId, string borrowerName)
         {
             Book book = _bookRepository.GetBookById(bookId);
@@ -59,6 +49,21 @@ namespace PersonalLibraryManagement.Services
             };
 
             return await _circulationRepository.AddAsync(lendCirculation);
+        }
+
+        // Thu hồi sách
+        public async Task<bool> RecallBookAsync(int bookId)
+        {
+            return await _circulationRepository.RecallAsync(bookId);
+        }
+
+        // Trả sách
+        public async Task<bool> ReturnBookAsync(int bookId)
+        {
+            bool circulationOk = await _circulationRepository.ReturnAsync(bookId);
+            bool deleteOk = await _bookRepository.DeleteAsync(bookId);
+
+            return circulationOk && deleteOk;
         }
     }
 }

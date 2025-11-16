@@ -12,7 +12,7 @@ namespace PersonalLibraryManagement.Repositories
     public class StorageLocationRepository : IStorageLocationRepository
     {
         private readonly IDbManager _dbManager;
-        private Dictionary<int, StorageLocationViewModel> _storageLocations;
+        // private Dictionary<int, StorageLocationViewModel> _storageLocations;
 
         private Dictionary<int, Room> _rooms = new Dictionary<int, Room>();
         private Dictionary<int, Shelf> _shelves = new Dictionary<int, Shelf>();

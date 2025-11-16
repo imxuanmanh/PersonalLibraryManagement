@@ -33,7 +33,6 @@
             this.Author = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Category = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panelBookProperties = new System.Windows.Forms.Panel();
-            this.btnCloseBookProperties = new System.Windows.Forms.Button();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.txtPublishYear = new System.Windows.Forms.TextBox();
             this.txtPublisher = new System.Windows.Forms.TextBox();
@@ -44,10 +43,11 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblPublisher = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.pbBookImage = new System.Windows.Forms.PictureBox();
             this.lblDetails = new System.Windows.Forms.Label();
-            this.pbBackground = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnCloseBookProperties = new System.Windows.Forms.Button();
+            this.pbBookImage = new System.Windows.Forms.PictureBox();
+            this.pbBackground = new System.Windows.Forms.PictureBox();
             this.panelBookProperties.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBookImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbBackground)).BeginInit();
@@ -112,17 +112,6 @@
             this.panelBookProperties.Name = "panelBookProperties";
             this.panelBookProperties.Size = new System.Drawing.Size(331, 514);
             this.panelBookProperties.TabIndex = 2;
-            // 
-            // btnCloseBookProperties
-            // 
-            this.btnCloseBookProperties.BackColor = System.Drawing.Color.Red;
-            this.btnCloseBookProperties.Location = new System.Drawing.Point(305, -1);
-            this.btnCloseBookProperties.Name = "btnCloseBookProperties";
-            this.btnCloseBookProperties.Size = new System.Drawing.Size(25, 25);
-            this.btnCloseBookProperties.TabIndex = 7;
-            this.btnCloseBookProperties.Text = "X";
-            this.btnCloseBookProperties.UseVisualStyleBackColor = false;
-            this.btnCloseBookProperties.Click += new System.EventHandler(this.OnCloseBookPropertiesBtnClick);
             // 
             // txtDescription
             // 
@@ -234,15 +223,6 @@
             this.label3.TabIndex = 2;
             this.label3.Text = "Mô tả:";
             // 
-            // pbBookImage
-            // 
-            this.pbBookImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pbBookImage.Location = new System.Drawing.Point(15, 25);
-            this.pbBookImage.Name = "pbBookImage";
-            this.pbBookImage.Size = new System.Drawing.Size(300, 300);
-            this.pbBookImage.TabIndex = 1;
-            this.pbBookImage.TabStop = false;
-            // 
             // lblDetails
             // 
             this.lblDetails.AutoSize = true;
@@ -252,6 +232,35 @@
             this.lblDetails.Size = new System.Drawing.Size(149, 22);
             this.lblDetails.TabIndex = 0;
             this.lblDetails.Text = "Thông tin chi tiết";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.Location = new System.Drawing.Point(707, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(2, 513);
+            this.panel1.TabIndex = 6;
+            // 
+            // btnCloseBookProperties
+            // 
+            this.btnCloseBookProperties.BackColor = System.Drawing.SystemColors.Window;
+            this.btnCloseBookProperties.ForeColor = System.Drawing.SystemColors.Window;
+            this.btnCloseBookProperties.Image = global::PersonalLibraryManagement.Properties.Resources.close;
+            this.btnCloseBookProperties.Location = new System.Drawing.Point(300, -1);
+            this.btnCloseBookProperties.Name = "btnCloseBookProperties";
+            this.btnCloseBookProperties.Size = new System.Drawing.Size(30, 30);
+            this.btnCloseBookProperties.TabIndex = 7;
+            this.btnCloseBookProperties.UseVisualStyleBackColor = false;
+            this.btnCloseBookProperties.Click += new System.EventHandler(this.OnCloseBookPropertiesBtnClick);
+            // 
+            // pbBookImage
+            // 
+            this.pbBookImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pbBookImage.Location = new System.Drawing.Point(15, 29);
+            this.pbBookImage.Name = "pbBookImage";
+            this.pbBookImage.Size = new System.Drawing.Size(300, 300);
+            this.pbBookImage.TabIndex = 1;
+            this.pbBookImage.TabStop = false;
             // 
             // pbBackground
             // 
@@ -263,14 +272,6 @@
             this.pbBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbBackground.TabIndex = 5;
             this.pbBackground.TabStop = false;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.Black;
-            this.panel1.Location = new System.Drawing.Point(707, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(2, 513);
-            this.panel1.TabIndex = 6;
             // 
             // UcBookList
             // 

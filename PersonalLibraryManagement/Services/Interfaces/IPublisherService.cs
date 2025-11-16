@@ -9,7 +9,7 @@ namespace PersonalLibraryManagement.Services
 {
     public interface IPublisherService
     {
+        Task<bool> AddPublisherAsync(Publisher publisher);
         Dictionary<int, Publisher> GetAllPublishers();
-
     }
 }

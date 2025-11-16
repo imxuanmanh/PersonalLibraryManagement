@@ -29,8 +29,6 @@ namespace PersonalLibraryManagement.Controls
 
         public string SelectedImageName { get; private set; } = null;
         public string SelectedImagePath { get; private set; } = null;
-        private List<StorageLocationViewModel> _storageLocations;
-
 
         public UcAddBook(
             IBookService bookService,
@@ -170,12 +168,10 @@ namespace PersonalLibraryManagement.Controls
             if (chkIsBorrowed.Checked == false)
             {
                 txtLender.Enabled = false;
-                dtpExpectedReturnDate.Enabled = false;
             }
             else
             {
                 txtLender.Enabled = true;
-                dtpExpectedReturnDate.Enabled = true;
             }
         }
 
@@ -261,21 +257,48 @@ namespace PersonalLibraryManagement.Controls
             {
                 case "Author":
                     {
-                        await _authorService.AddAuthorAsync(new Author { Name = value });
-                        SetupAuthorComboBox();
+                        if (await _authorService.AddAuthorAsync(new Author { Name = value }))
+                        {
+                            SetupAuthorComboBox();
+                            MessageBox.Show("Thêm tác giả mới thành công");
+                            cboAuthor.SelectedIndex = cboAuthor.Items.Count - 2;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm tác giả mới thất bại");
+                        }
+
                     }
 
                     break;
 
                 case "Category":
                     {
-                        
+                        if (await _categoryService.AddCategoryAsync(new Category { Name = value }))
+                        {
+                            SetupCategoryComboBox();
+                            MessageBox.Show("Thêm thể loại mới thành công");
+                            cboCategory.SelectedIndex = cboCategory.Items.Count - 2;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm thể loại mới thất bại");
+                        }
                     }
                     break;
 
                 case "Publisher":
                     {
-                        
+                        if (await _pulisherService.AddPublisherAsync(new Publisher { Name = value }))
+                        {
+                            SetupPublisherComboBox();
+                            MessageBox.Show("Thêm nhà xuất bản mới thành công");
+                            cboPublisher.SelectedIndex = cboPublisher.Items.Count - 2;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Thêm nhà xuất bản mới thành công");
+                        }
                     }
                     break;
 
@@ -287,6 +310,7 @@ namespace PersonalLibraryManagement.Controls
                         {
                             SetupRoomComboBox();
                             MessageBox.Show("Thêm phòng mới thành công");
+                            cboRoom.SelectedIndex = cboRoom.Items.Count - 2;
                         }
                         else
                         {
@@ -310,6 +334,7 @@ namespace PersonalLibraryManagement.Controls
                         {
                             SetupShelfComboBox(roomId);
                             MessageBox.Show("Thêm kệ mới thành công");
+                            cboShelf.SelectedIndex = cboShelf.Items.Count - 2;
                         }
                         else
                         {
@@ -333,6 +358,7 @@ namespace PersonalLibraryManagement.Controls
                         {
                             SetupShelfRowComboBox(shelfId);
                             MessageBox.Show("Thêm hàng mới thành công");
+                            cboShelfRow.SelectedIndex = cboShelfRow.Items.Count - 2;
                         }
                         else
                         {
@@ -342,91 +368,6 @@ namespace PersonalLibraryManagement.Controls
                     break;
             }
         }
-
-        /*
-        private async void OnAddBookButtonClick(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtTittle.Text))
-            {
-                MessageBox.Show("Tiêu đề sách không thể trống!");
-                return;
-            }
-
-            if (cboRoom.SelectedIndex == 0 ||
-                cboShelf.SelectedIndex == 0 ||
-                cboShelfRow.SelectedIndex == 0)
-            {
-                MessageBox.Show("Vị trí lưu trữ không thể trống!");
-                return;
-            }
-            Book newBook = new Book
-            {
-                Title = txtTittle.Text,
-                AuthorId = (int)cboAuthor.SelectedValue,
-                CategoryId = (int)cboCategory.SelectedValue,
-                PublisherId = (int)cboPublisher.SelectedValue,
-                PublishYear = int.TryParse(txtPublishYear.Text, out var result) ? result : (int?)null,
-                Description = txtDescription.Text,
-                ImagePath = SelectedImageName,
-                StorageLocationId = (int)cboShelfRow.SelectedValue
-            };
-
-            int newBookId = await _bookService.AddBookAsync(newBook);
-
-            if (newBookId == -1)
-            {
-                MessageBox.Show("Thêm sách thất bại, vui lòng thử lại!");
-                return;
-            }
-
-            if (chkIsBorrowed.Checked)
-            {
-                
-                Circulation newCirculation = new Circulation
-                {
-                    BookId = newBookId,
-                    BookTitleSnapshot = newBook.Title,
-                    LenderName = txtLender.Text,
-                };
-
-                _ = await _circulationService.AddCirculationAsync(newCirculation);
-            }
-
-            try
-            {
-                if (!File.Exists(SelectedImagePath))
-                {
-                    MessageBox.Show("Ảnh nguồn không tồn tại!");
-                    return;
-                }
-
-                string destinationPath = Path.Combine(PathManager.ImageDir, SelectedImageName);
-
-                if (File.Exists(destinationPath))
-                {
-                    string nameWithoutExt = Path.GetFileNameWithoutExtension(SelectedImageName);
-                    string ext = Path.GetExtension(SelectedImageName);
-                    string uniqueName = $"{nameWithoutExt}_{DateTime.Now.Ticks}{ext}";
-
-                    SelectedImageName = uniqueName; // Cập nhật lại tên để lưu vào DB
-                    destinationPath = Path.Combine(PathManager.ImageDir, uniqueName);
-                }
-
-                File.Move(SelectedImagePath, destinationPath);
-
-                // MessageBox.Show("Ảnh đã được di chuyển!");
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi di chuyển ảnh: " + ex.Message);
-            }
-
-            ResetForm();
-
-            MessageBox.Show("Thêm sách thành công!");
-        }
-        */
 
         private async void OnAddBookButtonClick(object sender, EventArgs e)
         {
@@ -476,7 +417,6 @@ namespace PersonalLibraryManagement.Controls
             }
             catch (Exception ex)
             {
-                // Nếu có lỗi, fallback sang ảnh mặc định, không hiển thị cảnh báo
                 imageNameToSave = "place-holder.png";
                 Console.WriteLine("Lỗi khi xử lý ảnh: " + ex.Message);
             }
@@ -490,7 +430,7 @@ namespace PersonalLibraryManagement.Controls
                 PublisherId = (int)cboPublisher.SelectedValue,
                 PublishYear = int.TryParse(txtPublishYear.Text, out var result) ? result : (int?)null,
                 Description = txtDescription.Text,
-                ImagePath = imageNameToSave, // luôn có ảnh hợp lệ
+                ImagePath = imageNameToSave,
                 StorageLocationId = (int)cboShelfRow.SelectedValue
             };
 
@@ -565,7 +505,7 @@ namespace PersonalLibraryManagement.Controls
             }
 
             btnSelectImage.Visible = false;
-        }
 
+        }
     }
 }
