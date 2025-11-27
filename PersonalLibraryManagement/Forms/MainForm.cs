@@ -136,6 +136,7 @@ namespace PersonalLibraryManagement
         private void OnBtnLendBorrowCtrlClick(object sender, EventArgs e)
         {
             gbCategoryList.Visible = false;
+            txtSearchBox.Enabled = true;
             ShowUserControl(new UcLendBorrowManager(_circulationService));
         }
 
@@ -144,13 +145,14 @@ namespace PersonalLibraryManagement
             UcBookList uc = new UcBookList(_bookService, _circulationService);
             uc.LoadBooksToListView();
             gbCategoryList.Visible = true;
-
+            txtSearchBox.Enabled = true;
             ShowUserControl(uc);
         }
 
         private void OnBtnAddBookClick(object sender, EventArgs e)
         {
             gbCategoryList.Visible = false;
+            txtSearchBox.Enabled = false;
             ShowUserControl(new UcAddBook(_bookService, _categoryService, _authorService, _publisherService, _storageLocationService, _circulationService));
         }
 
@@ -168,6 +170,7 @@ namespace PersonalLibraryManagement
         {
             ShowUserControl(new UcStats(_bookService, _circulationService, _authorService, _categoryService));
             gbCategoryList.Visible = false;
+            txtSearchBox.Enabled = false;
         }
 
         private void OnCategoryButtonClick(object sender, EventArgs e)

@@ -124,17 +124,17 @@
     </Compile>
     <Compile Include="Enums\CirculationStatus.cs" />
     <Compile Include="Extensions\SqliteDataReaderExtensions.cs" />
-    <Compile Include="FormAddItem.cs">
+    <Compile Include="Forms\FormAddItem.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormAddItem.Designer.cs">
+    <Compile Include="Forms\FormAddItem.Designer.cs">
       <DependentUpon>FormAddItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ISearchable.cs" />
-    <Compile Include="LendForm.cs">
+    <Compile Include="Forms\LendForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LendForm.Designer.cs">
+    <Compile Include="Forms\LendForm.Designer.cs">
       <DependentUpon>LendForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Manager\DbManager.cs" />
@@ -142,10 +142,10 @@
     <Compile Include="Manager\PathManager.cs" />
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Book.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Category.cs" />
@@ -201,13 +201,13 @@
     <EmbeddedResource Include="Controls\UcStats.resx">
       <DependentUpon>UcStats.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormAddItem.resx">
+    <EmbeddedResource Include="Forms\FormAddItem.resx">
       <DependentUpon>FormAddItem.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LendForm.resx">
+    <EmbeddedResource Include="Forms\LendForm.resx">
       <DependentUpon>LendForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

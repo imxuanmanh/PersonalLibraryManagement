@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.txtSearchBox = new System.Windows.Forms.TextBox();
             this.panelHeader = new System.Windows.Forms.Panel();
@@ -43,9 +42,6 @@
             this.gbCategoryList = new System.Windows.Forms.GroupBox();
             this.pnCategoryList = new System.Windows.Forms.Panel();
             this.panelRightView = new System.Windows.Forms.Panel();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.lưuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panelHeader.SuspendLayout();
@@ -56,7 +52,6 @@
             this.panelLeftMenu.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.gbCategoryList.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -236,33 +231,6 @@
             this.panelRightView.Size = new System.Drawing.Size(1049, 520);
             this.panelRightView.TabIndex = 0;
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1370, 25);
-            this.toolStrip1.TabIndex = 4;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lưuToolStripMenuItem});
-            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(56, 22);
-            this.toolStripDropDownButton1.Text = "Tập tin";
-            // 
-            // lưuToolStripMenuItem
-            // 
-            this.lưuToolStripMenuItem.Name = "lưuToolStripMenuItem";
-            this.lưuToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
-            this.lưuToolStripMenuItem.Text = "Lưu";
-            // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Silver;
@@ -278,7 +246,6 @@
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1370, 702);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainerMain);
             this.Controls.Add(this.panelHeader);
             this.Controls.Add(this.panel1);
@@ -303,10 +270,7 @@
             this.panelLeftMenu.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.gbCategoryList.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -321,9 +285,6 @@
         private System.Windows.Forms.Button btnLendBorrowCtrl;
         private System.Windows.Forms.Button btnAddBook;
         private System.Windows.Forms.Panel panelLeftMenu;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem lưuToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.Panel panelRightView;
         private System.Windows.Forms.GroupBox gbCategoryList;
         private System.Windows.Forms.GroupBox groupBox2;
